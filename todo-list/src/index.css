@@ -1,0 +1,643 @@
+/* Nunito Font */
+@font-face {
+  font-family: "Nunito";
+  src: url("fonts/Nunito-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Montserrat Font */
+@font-face {
+  font-family: "Montserrat";
+  src: url("fonts/Montserrat-ExtraBold.ttf") format("truetype");
+  font-weight: 800; /* Extra Bold */
+  font-style: normal;
+}
+
+:root {
+  /* Background Colors */
+  --background-color: #ffffff; /* Pure White */
+  --background-alt: #f2f2f2; /* Soft Off-White */
+
+  /* Primary Colors */
+  --primary-color: #228b22; /* Forest Green */
+  --primary-color-hover: #1d6a1d; /* Darker Forest Green for Hover */
+
+  /* Accent Colors */
+  --accent-color: #f4a261; /* Soft Coral */
+  --accent-color-hover: #e4935c; /* Darker Soft Coral for Hover */
+
+  /* Text Colors */
+  --text-color: #3d405b; /* Dark Slate */
+
+  /* Highlight Colors */
+  --highlight-color: #e9c46a; /* Soft Yellow */
+}
+
+/*
+  1. Use a more-intuitive box-sizing model.
+*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+/*
+    2. Remove default margin
+  */
+* {
+  margin: 0;
+}
+/*
+    Typographic tweaks!
+    3. Add accessible line-height
+    4. Improve text rendering
+  */
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-family: "Nunito", sans-serif;
+  background-color: var(--background-alt);
+}
+/*
+    5. Improve media defaults
+  */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+/*
+    6. Remove built-in form typography styles
+  */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+/*
+    7. Avoid text overflows
+  */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+/*
+    8. Create a root stacking context
+  */
+#root,
+#__next {
+  isolation: isolate;
+}
+
+.header {
+  height: 60px;
+  border: 1px solid black;
+  border-bottom: 2px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  justify-content: space-between;
+  background-color: var(--background-alt); /* Added background for contrast */
+}
+
+.menu-icon {
+  height: 50px;
+  width: 50px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.menu-icon:hover {
+  background-color: #e0e0e0;
+  border-radius: 3px;
+}
+.icon {
+  height: 16px;
+  width: 16px;
+}
+
+.logo {
+  display: flex;
+  gap: 5px;
+  height: 100%;
+  align-items: center;
+}
+
+.logo-icon {
+  height: 35px;
+  width: 35px;
+}
+
+.logo-text {
+  font-weight: 600;
+  font-size: 0;
+}
+
+.taskly {
+  font-size: 0;
+}
+
+.Task,
+.ly {
+  display: inline-block;
+  font-size: 36px; /* Restore font size */
+  font-weight: 900;
+  letter-spacing: 0;
+  font-family: "Montserrat";
+}
+
+.Task {
+  color: var(--primary-color);
+}
+
+.ly {
+  color: var(--highlight-color);
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+.sidebar {
+  width: 20%;
+  padding: 15px;
+  background-color: var(--background-color);
+  height: 100%;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateX(0);
+  transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+  z-index: 10; /* Ensure sidebar is above other elements */
+}
+
+.sidebar.open {
+  transform: translateX(-100%);
+}
+
+.main-container-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  flex: 1;
+  margin-left: 20%;
+  transition: margin-left 0.4s ease-in-out;
+}
+
+.main-container {
+  flex: 1;
+  padding: 20px 40px;
+  background-color: var(--background-alt);
+}
+
+.main-container-wrapper.shifted {
+  margin-left: 0;
+}
+
+h3 {
+  font-weight: bolder;
+  color: var(--text-color);
+}
+
+hr {
+  border-bottom: 1px solid var(--text-color);
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+  color: var(--text-color);
+  margin-bottom: 15px;
+}
+
+.home-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px; /* Increased padding for larger touch targets */
+  border-radius: 4px; /* Added border radius for a softer look */
+}
+
+.home-item:hover {
+  background-color: var(--primary-color-hover); /* Highlight on hover */
+  cursor: pointer;
+  color: var(--background-color);
+}
+.home-item > p {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.active {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border-radius: 2px;
+}
+
+.projects-container {
+  /* border: 1px solid black; */
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  /* padding: 0 10px; */
+  margin-top: 20px;
+  color: var(--text-color);
+  margin-bottom: 15px;
+}
+
+.project {
+  display: flex;
+  /* border: 1px solid black; */
+  align-items: center;
+  gap: 5px;
+  padding: 3px 5px 3px 20px;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.project.open .dropdown-menu {
+  display: flex;
+}
+
+.project:hover {
+  background-color: var(--background-alt);
+}
+
+.active:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.project > div {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  /* border: 1px solid black; */
+}
+
+.project div > p {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.three-dot {
+  height: 10px;
+  width: 10px;
+  cursor: pointer;
+}
+
+.project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 20px;
+  background-color: var(--background-color);
+  border: 1px solid var(--text-color);
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  align-items: flex-start;
+}
+
+.project-form.hidden {
+  display: none;
+}
+
+.project-form > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.project-input {
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid var(--text-color);
+  border-radius: 4px;
+  color: var(--text-color);
+  width: 50px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.btn-add,
+.btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border-radius: 5px;
+  font-size: 16px; /* Increased font size for better readability */
+}
+
+.btn-add:hover {
+  background-color: #6c957f; /* Feedback on hover */
+}
+
+.btn-cancel {
+  background-color: red;
+  color: var(--background-color);
+}
+
+.btn-cancel:hover {
+  background-color: #cc0000;
+}
+
+/* Adjust Add Project Button */
+.add-project {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background-color: var(--background-color);
+  border: 1px solid var(--text-color);
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+}
+
+.add-project:hover {
+  background-color: var(--background-alt);
+}
+
+.main-heading {
+  height: 80px;
+  background-color: var(--primary-color);
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: var(--background-color);
+  font-weight: bold;
+  border-radius: 3px;
+}
+
+.todos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: var(--background-color);
+  border: 1px solid var(--text-color);
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.todo-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.todo-content {
+  flex: 1;
+}
+
+.todo-title {
+  font-weight: bold;
+  color: var(--text-color);
+  font-size: 16px;
+}
+
+.todo-desc {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.todo-date {
+  font-size: 12px;
+  color: var(--text-color);
+}
+
+.todo-priority {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 5px;
+}
+
+.todo-priority.low {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+}
+
+.todo-priority.medium {
+  background-color: var(--highlight-color);
+  color: var(--text-color);
+}
+
+.todo-priority.high {
+  background-color: #e76f51; /* Muted red for high priority */
+  color: var(--background-color);
+}
+
+.todo-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%; /* Position just below the menu icon */
+  right: 0;
+  display: none;
+  flex-direction: column;
+  background-color: var(--background-color);
+  border: 1px solid var(--text-color);
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 80px;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 5px;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.dropdown-item:hover {
+  background-color: var(--background-alt);
+  color: var(--accent-color);
+}
+
+.menu-icon {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.todo-actions.open .dropdown-menu {
+  display: flex;
+}
+
+.edit-icon:hover,
+.remove-icon:hover {
+  color: var(--primary-color);
+}
+
+/* Styling for Add Task button */
+.add-todo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+  background-color: var(--accent-color);
+  color: var(--background-color);
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.add-todo:hover {
+  background-color: var(--accent-color-hover);
+}
+
+.add-todo p {
+  font-weight: 600;
+}
+
+/* Styling for form */
+.todo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  margin-top: 10px;
+  background-color: var(--background-alt);
+  border-radius: 5px;
+}
+
+.todo-form.hidden {
+  display: none;
+}
+
+.todo-title-input,
+.todo-desc-input,
+.todo-priority-input,
+.todo-date-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--text-color);
+  border-radius: 5px;
+}
+
+textarea.todo-desc-input {
+  resize: vertical;
+  height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.add-btn,
+.cancel-btn {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border-radius: 5px;
+}
+
+.cancel-btn {
+  background-color: red;
+}
+
+.add-btn:hover {
+  background-color: #6c957f;
+}
+
+.cancel-btn:hover {
+  background-color: #cc0000; /* Darker red for hover */
+}
+
+.modal {
+  display: block; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.7
+  ); /* Darker background for better contrast */
+}
+
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Added shadow for depth */
+}
+
+.close-btn {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+  cursor: pointer;
+}
+
+/* Added tooltips for buttons */
+.btn-add::after,
+.btn-cancel::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  background: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  display: none; /* Hidden by default */
+}
+
+.btn-add:hover::after,
+.btn-cancel:hover::after {
+  display: block; /* Show tooltip on hover */
+}

@@ -3,17 +3,24 @@ import * as Yup from "yup";
 import axios from "axios";
 import PropTypes from "prop-types";
 
-export default function AddProjectForm({ setIsProjectFormOpen, onAddProject }) {
-  AddProjectForm.propTypes = {
-    setIsProjectFormOpen: PropTypes.func.isRequired,
-    onAddProject: PropTypes.func.isRequired,
+export default function EditProjectForm({
+  setIsEditFormOpen,
+  project,
+  onEditProject,
+}) {
+  EditProjectForm.propTypes = {
+    setIsEditFormOpen: PropTypes.func.isRequired,
+    project: PropTypes.shape({
+      project_id: PropTypes.number.isRequired,
+      project_name: PropTypes.string.isRequired,
+      description: PropTypes.string,
+    }).isRequired,
+    onEditProject: PropTypes.func.isRequired,
   };
 
-  const handleCloseProjectForm = () => setIsProjectFormOpen(false);
-
   const initialValues = {
-    name: "",
-    description: "",
+    name: project.project_name,
+    description: project.description || "",
   };
 
   const validationSchema = Yup.object({
@@ -24,20 +31,17 @@ export default function AddProjectForm({ setIsProjectFormOpen, onAddProject }) {
   });
 
   const onSubmit = async (values, { setSubmitting }) => {
-    console.log("Form data", values);
-
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/projects/create/",
+      const response = await axios.patch(
+        `http://localhost:8000/api/todos/edit/${project.project_id}/`, // Update the URL based on your API
         values
       );
-      console.log("Response data", response.data);
-      onAddProject(response.data);
+      onEditProject(response.data); // Call the function to refresh the project list
     } catch (error) {
-      console.error("There was an error!", error);
+      console.error("There was an error updating the project!", error);
     }
     setSubmitting(false);
-    setIsProjectFormOpen(false);
+    setIsEditFormOpen(false);
   };
 
   return (
@@ -50,11 +54,6 @@ export default function AddProjectForm({ setIsProjectFormOpen, onAddProject }) {
         <Form>
           <div className="project-form">
             <div>
-              <img
-                src="icons/iteration.png"
-                className="icon"
-                alt="Project Icon"
-              />
               <Field
                 type="text"
                 className="project-input"
@@ -80,12 +79,12 @@ export default function AddProjectForm({ setIsProjectFormOpen, onAddProject }) {
                 className="btn-add"
                 disabled={formik.isSubmitting}
               >
-                {formik.isSubmitting ? "Adding..." : "Add"}
+                {formik.isSubmitting ? "Updating..." : "Update"}
               </button>
               <button
                 type="button"
                 className="btn-cancel"
-                onClick={handleCloseProjectForm}
+                onClick={() => setIsEditFormOpen(false)}
               >
                 Cancel
               </button>

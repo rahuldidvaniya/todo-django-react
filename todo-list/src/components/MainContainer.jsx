@@ -1,5 +1,5 @@
 import TodosContainer from "./TodosContainer";
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from "prop-types";
 
 export default function MainContainer({
   toggleTodoModal,
@@ -10,7 +10,7 @@ export default function MainContainer({
   MainContainer.propTypes = {
     toggleTodoModal: PropTypes.func.isRequired,
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
-    selectedProject: PropTypes.string,
+    selectedProject: PropTypes.number,
     activeItem: PropTypes.string.isRequired,
   }; // Define propTypes
 
@@ -22,7 +22,7 @@ export default function MainContainer({
   return (
     <div className="main-container">
       <div className="main-heading">
-        {selectedProject
+        {selectedProject && openedProject
           ? `Current Project: ${openedProject.project_name}`
           : activeItem === "today"
           ? "Today's Tasks"

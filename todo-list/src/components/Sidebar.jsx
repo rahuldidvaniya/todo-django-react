@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from "prop-types"; // Import PropTypes
 import ProjectsContainer from "./ProjectsContainer";
 export default function Sidebar({
   isSidebarOpen,
@@ -10,6 +10,7 @@ export default function Sidebar({
   handleSelectedProject,
   projects,
   setProjects,
+  setSelectedProject
 }) {
   Sidebar.propTypes = {
     isSidebarOpen: PropTypes.bool.isRequired,
@@ -17,14 +18,21 @@ export default function Sidebar({
     setActiveItem: PropTypes.func.isRequired,
     isProjectFormOpen: PropTypes.bool.isRequired,
     setIsProjectFormOpen: PropTypes.func.isRequired,
-    selectedProject: PropTypes.string,
+    selectedProject: PropTypes.number.isRequired,
     handleSelectedProject: PropTypes.func.isRequired,
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
     setProjects: PropTypes.func.isRequired,
-  }; // Define propTypes
+    setSelectedProject: PropTypes.func.isRequired,
+  };
 
   const handleItemClick = (item) => {
-    setActiveItem(item);
+    if (item === activeItem) {
+      // If the clicked item is already active, clear the selected project
+      setActiveItem("allTasks"); // Reset to a default state
+      setSelectedProject(null); // Clear the selected project
+    } else {
+      setActiveItem(item);
+    }
   };
   const toggleProjectForm = () => {
     setIsProjectFormOpen((prev) => !prev);

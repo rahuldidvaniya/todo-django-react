@@ -1,11 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from "prop-types"; // Import PropTypes
 
 export default function TodoForm({ onAddTodo }) {
   TodoForm.propTypes = {
     onAddTodo: PropTypes.func.isRequired,
-  }; // Define propTypes
+  };
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

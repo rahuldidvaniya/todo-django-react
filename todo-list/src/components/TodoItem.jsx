@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from "prop-types";
 
 export default function TodoItem(props) {
   TodoItem.propTypes = {
@@ -10,10 +10,14 @@ export default function TodoItem(props) {
     dueDate: PropTypes.string.isRequired,
     priority: PropTypes.string.isRequired,
     refreshTodos: PropTypes.func.isRequired,
-  }; // Define propTypes
+    isCompleted: PropTypes.bool.isRequired,
+  };
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null); // Create a ref to the menu
+  const [isCompleted, setIsCompleted] = useState(props.isCompleted);
+  const menuRef = useRef(null);
+
+  const isOverdue = !isCompleted && new Date(props.dueDate) < new Date();
 
   const handleMenuClick = () => {
     setIsMenuOpen((prev) => !prev);
@@ -28,10 +32,20 @@ export default function TodoItem(props) {
       try {
         await axios.delete(`http://127.0.0.1:8000/api/todos/${props.id}/`);
         setIsMenuOpen(false);
-        props.refreshTodos(); // Refresh the todo list
+        props.refreshTodos();
       } catch (error) {
         console.error("Failed to delete todo:", error);
       }
+    }
+  };
+
+  const toggleCompletion = async () => {
+    try {
+      await axios.put(`http://127.0.0.1:8000/api/todo/completed/${props.id}/`);
+      setIsCompleted(!isCompleted);
+      props.refreshTodos();
+    } catch (error) {
+      console.error("Failed to update todo status:", error);
     }
   };
 
@@ -43,32 +57,53 @@ export default function TodoItem(props) {
       }
     };
 
-    // Bind the event listener
     document.addEventListener("mousedown", handleClickOutside);
 
-    // Clean up the event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
-    <div className="todo-item">
-      <input type="checkbox" className="todo-checkbox" />
+    <div
+      className={`todo-item ${isCompleted ? "completed" : ""} ${
+        isOverdue ? "overdue" : ""
+      }`}
+    >
+      <input
+        type="checkbox"
+        className="todo-checkbox"
+        checked={isCompleted}
+        onChange={toggleCompletion}
+      />
       <div className="todo-content">
         <div className="todo-title">{props.title}</div>
         <div className="todo-desc">{props.description}</div>
-        <div className="todo-date">Due Date: {props.dueDate}</div>
-        <div
-          className={`todo-priority ${
-            props.priority === "low"
-              ? "low"
-              : props.priority === "medium"
-              ? "medium"
-              : "high"
-          }`}
-        >
-          {props.priority.charAt(0).toUpperCase() + props.priority.slice(1)}
+        <div className="todo-date">
+          Due Date:{" "}
+          <span className={isOverdue ? "overdue-date" : ""}>
+            {props.dueDate}
+          </span>
+        </div>
+        <div className="badges">
+          <div
+            className={`todo-priority ${
+              props.priority === "low"
+                ? "low"
+                : props.priority === "medium"
+                ? "medium"
+                : "high"
+            }`}
+          >
+            {props.priority.charAt(0).toUpperCase() + props.priority.slice(1)}
+          </div>
+          <div
+            className={`status-badge ${
+              isCompleted ? "completed" : isOverdue ? "overdue" : "pending"
+            }`}
+          >
+            {isCompleted ? "Completed" : isOverdue ? "Overdue" : "Pending"}
+          </div>
         </div>
       </div>
       <div className="todo-actions" ref={menuRef}>
@@ -78,7 +113,6 @@ export default function TodoItem(props) {
           alt="Menu Icon"
           onClick={handleMenuClick}
         />
-
         {isMenuOpen && (
           <div className="dropdown-menu">
             <div className="dropdown-item edit">Edit</div>

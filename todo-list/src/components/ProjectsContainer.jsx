@@ -1,8 +1,9 @@
 import AddProjectForm from "./AddProjectForm";
 import axios from "axios";
 import Modal from "./Modal";
-import PropTypes from 'prop-types'; // Import PropTypes
-import { useEffect } from 'react'; // Import useEffect
+import PropTypes from "prop-types";
+import { useEffect } from "react";
+import ProjectItem from "./ProjectItem";
 
 export default function ProjectsContainer({
   isProjectFormOpen,
@@ -19,7 +20,7 @@ export default function ProjectsContainer({
     handleSelectedProject: PropTypes.func.isRequired,
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
     setProjects: PropTypes.func.isRequired,
-  }; // Define propTypes
+  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -33,9 +34,15 @@ export default function ProjectsContainer({
 
     fetchProjects();
   }, []);
-  // Function to handle adding a new project
+
   const addProject = (newProject) => {
     setProjects((prevProjects) => [...prevProjects, newProject]);
+  };
+
+  const removeProject = (id) => {
+    setProjects((prevProject) =>
+      prevProject.filter((project) => project.project_id !== id)
+    );
   };
 
   return (
@@ -44,23 +51,13 @@ export default function ProjectsContainer({
       <hr />
       <div className="projects-container">
         {projects.map((project) => (
-          <div
+          <ProjectItem
             key={project.project_id}
-            className={`project ${
-              project.project_id === selectedProject ? "active" : ""
-            }`}
-            onClick={() => handleSelectedProject(project.project_id)}
-          >
-            <div>
-              <img
-                src="icons/iteration.png"
-                className="icon"
-                alt="Project Icon"
-              />
-              <p>{project.project_name}</p>
-            </div>
-            <img src="icons/menu.png" className="icon three-dot" />
-          </div>
+            project={project}
+            handleSelectedProject={handleSelectedProject}
+            selectedProject={selectedProject}
+            refreshProjects={() => removeProject(project.project_id)}
+          />
         ))}
       </div>
       <div className="add-project" onClick={toggleProjectForm}>

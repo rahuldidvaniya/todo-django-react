@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./App.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
@@ -40,6 +40,7 @@ function App() {
           handleSelectedProject={handleSelectedProject}
           projects={projects}
           setProjects={setProjects}
+          setSelectedProject = {setSelectedProject}
         />
         <div
           className={`main-container-wrapper no-transition ${

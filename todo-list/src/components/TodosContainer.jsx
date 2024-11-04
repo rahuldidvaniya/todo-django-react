@@ -1,7 +1,7 @@
 import TodoItem from "./TodoItem";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from "prop-types";
 
 export default function TodosContainer({
   toggleTodoModal,
@@ -10,9 +10,9 @@ export default function TodosContainer({
 }) {
   TodosContainer.propTypes = {
     toggleTodoModal: PropTypes.func.isRequired,
-    selectedProject: PropTypes.string,
+    selectedProject: PropTypes.number,
     activeItem: PropTypes.string.isRequired,
-  }; // Define propTypes
+  };
 
   const [todos, setTodos] = useState([]);
 
@@ -32,22 +32,22 @@ export default function TodosContainer({
       }
 
       const today = new Date();
+      today.setHours(0, 0, 0, 0);
       const next7Days = new Date();
       next7Days.setDate(today.getDate() + 7);
+      next7Days.setHours(0, 0, 0, 0); // Set time to the start of the day
 
       if (activeItem === "today") {
         filteredTodos = filteredTodos.filter((todo) => {
           const dueDate = new Date(todo.due_date);
-          return (
-            dueDate.getFullYear() === today.getFullYear() &&
-            dueDate.getMonth() === today.getMonth() &&
-            dueDate.getDate() === today.getDate()
-          );
+          dueDate.setHours(0, 0, 0, 0); // Set time to the start of the day
+          return dueDate.getTime() === today.getTime(); // Check for exact match
         });
       } else if (activeItem === "next7Days") {
         filteredTodos = filteredTodos.filter((todo) => {
           const dueDate = new Date(todo.due_date);
-          return dueDate >= today && dueDate <= next7Days;
+          dueDate.setHours(0, 0, 0, 0); // Set time to the start of the day
+          return dueDate >= today && dueDate < next7Days; // Include only due dates within the next 7 days
         });
       }
 
@@ -57,8 +57,9 @@ export default function TodosContainer({
     }
   };
 
-  const removeTodo = (id) => {
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  // Function to refresh todos
+  const refreshTodos = () => {
+    fetchTodos();
   };
 
   return (
@@ -73,14 +74,16 @@ export default function TodosContainer({
             priority={todo.priority}
             dueDate={todo.due_date}
             isCompleted={todo.is_completed}
-            refreshTodos={() => removeTodo(todo.id)}
+            refreshTodos={refreshTodos} // Pass the refresh function here
           />
         ))}
       </div>
-      <div className="add-todo" onClick={toggleTodoModal}>
-        <img src="icons/queue.png" className="icon" alt="Add Task Icon" />
-        <p>Add Task</p>
-      </div>
+      {selectedProject && (
+        <div className="add-todo" onClick={toggleTodoModal}>
+          <img src="icons/queue.png" className="icon" alt="Add Task Icon" />
+          <p>Add Task</p>
+        </div>
+      )}
     </>
   );
 }

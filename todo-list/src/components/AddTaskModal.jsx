@@ -1,13 +1,13 @@
 import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from "prop-types";
 
 export default function AddTaskModal({ setIsTodoFormOpen, selectedProject }) {
   AddTaskModal.propTypes = {
     setIsTodoFormOpen: PropTypes.func.isRequired,
     selectedProject: PropTypes.string.isRequired,
-  }; // Define propTypes
+  };
 
   const closeModal = () => setIsTodoFormOpen(false);
 
@@ -47,6 +47,9 @@ export default function AddTaskModal({ setIsTodoFormOpen, selectedProject }) {
       }
     },
   });
+
+  // Get today's date in the format YYYY-MM-DD for the min attribute
+  const todayDate = new Date().toISOString().split("T")[0];
 
   return (
     <div className="modal">
@@ -100,6 +103,7 @@ export default function AddTaskModal({ setIsTodoFormOpen, selectedProject }) {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.dueDate ? formik.values.dueDate : ""}
+            min={todayDate} // Set min date to today
           />
           {formik.touched.dueDate && formik.errors.dueDate ? (
             <div className="error">{formik.errors.dueDate}</div>

@@ -6,15 +6,18 @@ export default function MainContainer({
   projects,
   selectedProject,
   activeItem,
+  tasks,
+  setTasks,
+  openEditTaskForm,
 }) {
   MainContainer.propTypes = {
     toggleTodoModal: PropTypes.func.isRequired,
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
     selectedProject: PropTypes.number,
     activeItem: PropTypes.string.isRequired,
-  }; // Define propTypes
+  }; 
 
-  // Find the selected project based on the openedProject ID
+
   const openedProject = projects.find(
     (project) => project.project_id === selectedProject
   );
@@ -35,6 +38,9 @@ export default function MainContainer({
         toggleTodoModal={toggleTodoModal}
         selectedProject={selectedProject}
         activeItem={activeItem}
+        tasks={tasks}
+        setTasks={setTasks}
+       openEditTaskForm={openEditTaskForm}
       />
     </div>
   );

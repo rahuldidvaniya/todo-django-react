@@ -1,12 +1,15 @@
 import TodoItem from "./TodoItem";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import PropTypes from "prop-types";
+import PropTypes from "prop-types"; 
 
 export default function TodosContainer({
   toggleTodoModal,
   selectedProject,
   activeItem,
+  tasks,
+  setTasks,
+  openEditTaskForm
 }) {
   TodosContainer.propTypes = {
     toggleTodoModal: PropTypes.func.isRequired,
@@ -24,6 +27,10 @@ export default function TodosContainer({
     try {
       const response = await axios.get("http://127.0.0.1:8000/api/todos/");
       let filteredTodos = response.data;
+      
+      // Update the tasks state in parent component
+      console.log("this should be the response.data", response.data);
+      setTasks(response.data);
 
       if (selectedProject) {
         filteredTodos = filteredTodos.filter(
@@ -57,9 +64,8 @@ export default function TodosContainer({
     }
   };
 
-  // Function to refresh todos
-  const refreshTodos = () => {
-    fetchTodos();
+  const removeTodo = (id) => {
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
   };
 
   return (
@@ -74,7 +80,8 @@ export default function TodosContainer({
             priority={todo.priority}
             dueDate={todo.due_date}
             isCompleted={todo.is_completed}
-            refreshTodos={refreshTodos} // Pass the refresh function here
+            refreshTodos={() => removeTodo(todo.id)}
+            openEditTaskForm={openEditTaskForm}
           />
         ))}
       </div>

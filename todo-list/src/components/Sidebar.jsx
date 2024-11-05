@@ -10,7 +10,8 @@ export default function Sidebar({
   handleSelectedProject,
   projects,
   setProjects,
-  setSelectedProject
+  setSelectedProject,
+  openEditForm,
 }) {
   Sidebar.propTypes = {
     isSidebarOpen: PropTypes.bool.isRequired,
@@ -23,13 +24,13 @@ export default function Sidebar({
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
     setProjects: PropTypes.func.isRequired,
     setSelectedProject: PropTypes.func.isRequired,
+    openEditForm: PropTypes.func.isRequired,
   };
 
   const handleItemClick = (item) => {
     if (item === activeItem) {
-      // If the clicked item is already active, clear the selected project
-      setActiveItem("allTasks"); // Reset to a default state
-      setSelectedProject(null); // Clear the selected project
+      setActiveItem("allTasks");
+      setSelectedProject(null);
     } else {
       setActiveItem(item);
     }
@@ -72,6 +73,7 @@ export default function Sidebar({
         handleSelectedProject={handleSelectedProject}
         projects={projects}
         setProjects={setProjects}
+        openEditForm={openEditForm}
       />
     </aside>
   );

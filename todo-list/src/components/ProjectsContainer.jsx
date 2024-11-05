@@ -12,14 +12,23 @@ export default function ProjectsContainer({
   handleSelectedProject,
   projects,
   setProjects,
+  openEditForm,
 }) {
   ProjectsContainer.propTypes = {
     isProjectFormOpen: PropTypes.bool.isRequired,
     toggleProjectForm: PropTypes.func.isRequired,
-    selectedProject: PropTypes.string,
+    selectedProject: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.shape({
+        project_id: PropTypes.number.isRequired,
+        project_name: PropTypes.string.isRequired,
+        description: PropTypes.string
+      })
+    ]),
     handleSelectedProject: PropTypes.func.isRequired,
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
     setProjects: PropTypes.func.isRequired,
+    openEditForm: PropTypes.func.isRequired,
   };
 
   useEffect(() => {
@@ -57,6 +66,7 @@ export default function ProjectsContainer({
             handleSelectedProject={handleSelectedProject}
             selectedProject={selectedProject}
             refreshProjects={() => removeProject(project.project_id)}
+            openEditForm={openEditForm}
           />
         ))}
       </div>

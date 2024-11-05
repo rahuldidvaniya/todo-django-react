@@ -5,7 +5,7 @@ export default function Modal({ isOpen, onClose, children }) {
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     children: PropTypes.node.isRequired,
-  }; // Define propTypes
+  }; 
 
   if (!isOpen) return null;
 

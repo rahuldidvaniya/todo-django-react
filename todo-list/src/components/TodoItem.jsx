@@ -49,7 +49,7 @@ export default function TodoItem(props) {
     }
   };
 
-  // Close menu if user clicks outside of it
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -69,6 +69,7 @@ export default function TodoItem(props) {
       className={`todo-item ${isCompleted ? "completed" : ""} ${
         isOverdue ? "overdue" : ""
       }`}
+      
     >
       <input
         type="checkbox"
@@ -115,7 +116,7 @@ export default function TodoItem(props) {
         />
         {isMenuOpen && (
           <div className="dropdown-menu">
-            <div className="dropdown-item edit">Edit</div>
+            <div className="dropdown-item edit" onClick={() => props.openEditTaskForm(props.id)}>Edit</div>
             <div className="dropdown-item delete" onClick={handleDelete}>
               Delete
             </div>

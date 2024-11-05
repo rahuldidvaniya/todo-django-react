@@ -251,11 +251,9 @@ hr {
 }
 
 .projects-container {
-  /* border: 1px solid black; */
   display: flex;
   flex-direction: column;
   gap: 5px;
-  /* padding: 0 10px; */
   margin-top: 20px;
   color: var(--text-color);
   margin-bottom: 15px;
@@ -265,7 +263,6 @@ hr {
 
 .project {
   display: flex;
-  /* border: 1px solid black; */
   align-items: center;
   gap: 5px;
   padding: 8px;
@@ -288,7 +285,6 @@ hr {
   display: flex;
   gap: 5px;
   align-items: center;
-  /* border: 1px solid black; */
 }
 
 .project div > p {
@@ -332,7 +328,6 @@ hr {
   border: 1px solid var(--text-color);
   border-radius: 4px;
   color: var(--text-color);
-  width: 50px;
 }
 
 .form-actions {
@@ -474,7 +469,6 @@ hr {
   width: 25%;
   align-items: center;
   justify-content: space-around;
-  /* border: 1px solid black; */
   margin-top: 5px;
 }
 
@@ -484,7 +478,6 @@ hr {
 }
 
 .status-badge {
-  /* position: absolute; */
   padding: 5px 10px;
   border-radius: 12px;
   font-size: 12px;
@@ -654,7 +647,8 @@ textarea.todo-desc-input {
   margin: 10% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 50%;
+  width: 90%; /* Adjusted for mobile responsiveness */
+  max-width: 500px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
@@ -688,7 +682,6 @@ textarea.todo-desc-input {
   display: block;
 }
 
-/* src/components/Modal.css */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -707,7 +700,7 @@ textarea.todo-desc-input {
   padding: 20px;
   border-radius: 8px;
   position: relative;
-  width: 90%;
+  width: 90%; /* Adjusted for mobile responsiveness */
   max-width: 500px;
 }
 
@@ -746,4 +739,88 @@ textarea.todo-desc-input {
   color: #888;
   font-size: 1.2em;
   margin: 20px 0;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    height: auto;
+    padding: 15px; /* Increased padding for better spacing */
+  }
+
+  .sidebar {
+    width: 100%;
+    position: fixed; /* Changed to fixed for better mobile handling */
+    top: 0; /* Aligns the sidebar to the top */
+    left: 0; /* Aligns the sidebar to the left */
+    height: 100%; /* Full height for the sidebar */
+    background-color: #f8f9fa; /* Light background for better visibility */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
+    transition: transform 0.3s ease; /* Smooth transition for opening/closing */
+    transform: translateX(-100%); /* Initially hidden off-screen */
+  }
+
+  .sidebar.active {
+    transform: translateX(0); /* Show sidebar when active */
+  }
+
+  .main-container-wrapper {
+    margin-left: 0;
+  }
+
+  .main-container {
+    padding: 15px; /* Increased padding for better spacing */
+  }
+
+  .menu-icon {
+    width: 50px; /* Increased size for better touch targets */
+    height: 50px;
+  }
+
+  .logo-icon {
+    height: 35px; /* Increased size for better visibility */
+    width: 35px;
+  }
+
+  .Task {
+    font-size: 32px; /* Increased font size for better readability */
+  }
+
+  .ly {
+    font-size: 32px; /* Increased font size for better readability */
+  }
+
+  .project-form {
+    padding: 15px; /* Increased padding for better spacing */
+  }
+
+  .add-todo {
+    padding: 10px; /* Increased padding for better touch targets */
+  }
+
+  .todo-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px; /* Added padding for better spacing */
+  }
+
+  .todo-title {
+    font-size: 16px; /* Increased font size for better readability */
+  }
+
+  .todo-desc,
+  .todo-date,
+  .todo-priority {
+    font-size: 14px; /* Increased font size for better readability */
+  }
+
+  .btn-add,
+  .btn-cancel,
+  .add-btn,
+  .cancel-btn {
+    width: 100%; /* Full width buttons on mobile */
+    padding: 12px; /* Increased padding for better touch targets */
+    font-size: 16px; /* Increased font size for better readability */
+  }
 }

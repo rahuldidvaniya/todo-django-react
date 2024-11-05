@@ -7,16 +7,18 @@ export default function ProjectItem({
   handleSelectedProject,
   selectedProject,
   refreshProjects,
+  openEditForm,
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+
   const handleMenuClick = () => {
     setIsMenuOpen((prev) => !prev);
   };
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
-      "Are you sure want to delete this project?"
+      "Are you sure you want to delete this project?"
     );
     if (confirmDelete) {
       try {
@@ -29,6 +31,11 @@ export default function ProjectItem({
         console.error("Failed to delete project:", error);
       }
     }
+  };
+
+  const handleEdit = () => {
+    openEditForm(project.project_id);
+    setIsMenuOpen(false);
   };
 
   useEffect(() => {
@@ -44,6 +51,7 @@ export default function ProjectItem({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   return (
     <div
       key={project.project_id}
@@ -65,7 +73,9 @@ export default function ProjectItem({
         />
         {isMenuOpen && (
           <div className="project-dropdown">
-            <div className="dropdown-item edit">Edit</div>
+            <div className="dropdown-item edit" onClick={handleEdit}>
+              Edit
+            </div>
             <div className="dropdown-item delete" onClick={handleDelete}>
               Delete
             </div>
@@ -86,4 +96,5 @@ ProjectItem.propTypes = {
   handleSelectedProject: PropTypes.func.isRequired,
   selectedProject: PropTypes.number.isRequired,
   refreshProjects: PropTypes.func.isRequired,
+  openEditForm: PropTypes.func.isRequired, // Add prop types
 };

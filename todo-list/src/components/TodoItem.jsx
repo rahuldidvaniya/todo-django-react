@@ -11,6 +11,8 @@ export default function TodoItem(props) {
     priority: PropTypes.string.isRequired,
     refreshTodos: PropTypes.func.isRequired,
     isCompleted: PropTypes.bool.isRequired,
+    openEditTaskForm: PropTypes.func.isRequired,
+    fetchTodos: PropTypes.func.isRequired,
   };
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,7 +45,8 @@ export default function TodoItem(props) {
     try {
       await axios.put(`http://127.0.0.1:8000/api/todo/completed/${props.id}/`);
       setIsCompleted(!isCompleted);
-      props.refreshTodos();
+      props.fetchTodos();
+     
     } catch (error) {
       console.error("Failed to update todo status:", error);
     }

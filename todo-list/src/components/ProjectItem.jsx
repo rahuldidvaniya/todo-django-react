@@ -6,8 +6,8 @@ export default function ProjectItem({
   project,
   handleSelectedProject,
   selectedProject,
-  refreshProjects,
   openEditForm,
+  fetchProjects,
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -26,7 +26,7 @@ export default function ProjectItem({
           `http://127.0.0.1:8000/api/projects/${project.project_id}/`
         );
         setIsMenuOpen(false);
-        refreshProjects();
+        fetchProjects();
       } catch (error) {
         console.error("Failed to delete project:", error);
       }
@@ -95,6 +95,6 @@ ProjectItem.propTypes = {
   isMenuOpen: PropTypes.bool.isRequired,
   handleSelectedProject: PropTypes.func.isRequired,
   selectedProject: PropTypes.number.isRequired,
-  refreshProjects: PropTypes.func.isRequired,
-  openEditForm: PropTypes.func.isRequired, // Add prop types
+  openEditForm: PropTypes.func.isRequired, 
+  fetchProjects: PropTypes.func.isRequired,
 };

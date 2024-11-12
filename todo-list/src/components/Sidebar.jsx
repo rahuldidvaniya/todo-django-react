@@ -12,6 +12,7 @@ export default function Sidebar({
   setProjects,
   setSelectedProject,
   openEditForm,
+  fetchProjects,
 }) {
   Sidebar.propTypes = {
     isSidebarOpen: PropTypes.bool.isRequired,
@@ -25,6 +26,7 @@ export default function Sidebar({
     setProjects: PropTypes.func.isRequired,
     setSelectedProject: PropTypes.func.isRequired,
     openEditForm: PropTypes.func.isRequired,
+    fetchProjects: PropTypes.func.isRequired,
   };
 
   const handleItemClick = (item) => {
@@ -74,6 +76,7 @@ export default function Sidebar({
         projects={projects}
         setProjects={setProjects}
         openEditForm={openEditForm}
+        fetchProjects={fetchProjects}
       />
     </aside>
   );

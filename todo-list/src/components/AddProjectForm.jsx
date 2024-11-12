@@ -3,10 +3,11 @@ import * as Yup from "yup";
 import axios from "axios";
 import PropTypes from "prop-types";
 
-export default function AddProjectForm({ setIsProjectFormOpen, onAddProject }) {
+export default function AddProjectForm({ setIsProjectFormOpen, onAddProject, fetchProjects }) {
   AddProjectForm.propTypes = {
     setIsProjectFormOpen: PropTypes.func.isRequired,
     onAddProject: PropTypes.func.isRequired,
+    fetchProjects: PropTypes.func.isRequired,
   };
 
   const handleCloseProjectForm = () => setIsProjectFormOpen(false);
@@ -33,6 +34,7 @@ export default function AddProjectForm({ setIsProjectFormOpen, onAddProject }) {
       );
       console.log("Response data", response.data);
       onAddProject(response.data);
+      fetchProjects();
     } catch (error) {
       console.error("There was an error!", error);
     }

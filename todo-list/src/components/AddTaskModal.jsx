@@ -3,10 +3,11 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
 
-export default function AddTaskModal({ setIsTodoFormOpen, selectedProject }) {
+export default function AddTaskModal({ setIsTodoFormOpen, selectedProject, fetchTodos }) {
   AddTaskModal.propTypes = {
     setIsTodoFormOpen: PropTypes.func.isRequired,
     selectedProject: PropTypes.string.isRequired,
+    fetchTodos: PropTypes.func.isRequired,
   };
 
   const closeModal = () => setIsTodoFormOpen(false);
@@ -42,6 +43,7 @@ export default function AddTaskModal({ setIsTodoFormOpen, selectedProject }) {
         );
         console.log("Todo added:", response.data);
         closeModal();
+        fetchTodos();
       } catch (error) {
         console.error("Error adding todo:", error);
       }

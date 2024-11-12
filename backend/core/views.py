@@ -7,7 +7,7 @@ Contains API views for CRUD operations on projects and todos using stored proced
 import logging
 
 # Django imports
-from django.db import connection, DatabaseError
+from django.db import connection, DatabaseError, transaction
 from django.shortcuts import render
 
 # Third party imports
@@ -41,7 +41,7 @@ class ProjectCreateView(APIView):
         Returns:
             Response with created project data or error details
         """
-        serializer = ProjectSerializer(data=request.data)
+        serializer = ProjectSerializer(data=request.data, partial=False)
         if serializer.is_valid():
             name = serializer.validated_data['name']
             description = serializer.validated_data.get('description', '')
@@ -65,7 +65,10 @@ class ProjectCreateView(APIView):
                 )
         
         logger.warning(f"Project validation failed: {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"detail": "Invalid project data", "errors": serializer.errors},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class ProjectListView(APIView):
@@ -84,15 +87,21 @@ class ProjectListView(APIView):
         try:
             with connection.cursor() as cursor:
                 cursor.execute("SELECT * FROM list_projects()")
+                if cursor.rowcount == 0:
+                    return Response([], status=status.HTTP_200_OK)
+                
                 rows = cursor.fetchall()
                 columns = [col[0] for col in cursor.description]
                 projects = [dict(zip(columns, row)) for row in rows]
-            return Response(projects, status=status.HTTP_200_OK)
-            
+                return Response(projects, status=status.HTTP_200_OK)
+                
         except DatabaseError as error:
             logger.error(f"Database error fetching projects: {error}")
             return Response(
-                {"detail": "Error retrieving projects."},
+                {
+                    "detail": "Database error occurred",
+                    "error": str(error)
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
@@ -112,6 +121,14 @@ class TodoCreateView(APIView):
         """
         serializer = TodoSerializer(data=request.data)
         if serializer.is_valid():
+            # Add project existence check
+            project_id = serializer.validated_data['project_id']
+            if not self._project_exists(project_id):
+                return Response(
+                    {"detail": "Project does not exist"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
             try:
                 with connection.cursor() as cursor:
                     cursor.callproc('add_todo', [
@@ -138,6 +155,14 @@ class TodoCreateView(APIView):
                 
         logger.warning(f"Todo validation failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def _project_exists(self, project_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT EXISTS (SELECT 1 FROM public.projects WHERE id = %s)",
+                [project_id]
+            )
+            return cursor.fetchone()[0]
 
 
 class TodoListView(APIView):
@@ -184,14 +209,29 @@ class TodoDeleteView(APIView):
             Response indicating success or error
         """
         try:
-            with connection.cursor() as cursor:
-                cursor.callproc('delete_todo', [id])
-            return Response(status=status.HTTP_204_NO_CONTENT)
-            
+            with transaction.atomic():
+                with connection.cursor() as cursor:
+                    # Check if todo exists
+                    cursor.execute(
+                        "SELECT EXISTS (SELECT 1 FROM public.todos WHERE id = %s)",
+                        [id]
+                    )
+                    if not cursor.fetchone()[0]:
+                        return Response(
+                            {"detail": "Todo not found"},
+                            status=status.HTTP_404_NOT_FOUND
+                        )
+                    
+                    cursor.callproc('delete_todo', [id])
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    
         except DatabaseError as error:
             logger.error(f"Database error deleting todo {id}: {error}")
             return Response(
-                {"detail": f"Error deleting todo {id}"},
+                {
+                    "detail": "Database error occurred",
+                    "error": str(error)
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
@@ -302,7 +342,13 @@ class EditProject(APIView):
         Returns:
             Response with updated project data or error details
         """
-        serializer = ProjectSerializer(data=request.data)
+        if not self._project_exists(id):
+            return Response(
+                {"detail": "Project not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        serializer = ProjectSerializer(data=request.data, partial=True)
         if serializer.is_valid():
             name = serializer.validated_data['name']
             description = serializer.validated_data.get('description', '')
@@ -328,12 +374,27 @@ class EditProject(APIView):
         logger.warning(f"Project update validation failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def _project_exists(self, id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT EXISTS (SELECT 1 FROM public.projects WHERE id = %s)",
+                [id]
+            )
+            return cursor.fetchone()[0]
+
 
 class EditTodo(APIView):
     """API view to edit todo details."""
     
     def patch(self, request, id):
-        serializer = TodoSerializer(data=request.data)
+        # Add todo existence check
+        if not self._todo_exists(id):
+            return Response(
+                {"detail": "Todo not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = TodoSerializer(data=request.data, partial=True)  # Allow partial updates
         if serializer.is_valid():
             title = serializer.validated_data['title']
             description = serializer.validated_data.get('description', '')
@@ -359,3 +420,11 @@ class EditTodo(APIView):
                 )
         logger.warning(f"Todo update validation failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def _todo_exists(self, id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT EXISTS (SELECT 1 FROM public.todos WHERE id = %s)",
+                [id]
+            )
+            return cursor.fetchone()[0]

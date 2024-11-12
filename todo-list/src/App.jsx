@@ -6,8 +6,10 @@ import MainContainer from "./components/MainContainer";
 import AddTaskModal from "./components/AddTaskModal";
 import Modal from "./components/Modal";
 import AddProjectForm from "./components/AddProjectForm";
-import EditProjectForm from "./components/EditProjectForm"; 
+import EditProjectForm from "./components/EditProjectForm";
 import EditTaskModal from "./components/EditTaskModal";
+import axios from "axios";
+
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -22,7 +24,6 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
 
-
   const toggleSidebar = () => {
     setIsSidebarOpen((prevState) => !prevState);
   };
@@ -35,10 +36,8 @@ function App() {
     setSelectedProject(id);
   };
 
-
-
   const openEditForm = (projectId) => {
-    const project = projects.find(p => p.project_id === projectId);
+    const project = projects.find((p) => p.project_id === projectId);
     if (project) {
       setProjectToEdit(project);
       setIsEditFormOpen(true);
@@ -46,27 +45,81 @@ function App() {
   };
 
   const openEditTaskForm = (taskId) => {
-    const task = tasks.find(t => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId);
     if (task) {
       setSelectedTask(task);
       setIsEditTaskFormOpen(true);
     }
   };
 
-
-
   const closeEditForm = () => {
     setIsEditFormOpen(false);
   };
 
   const handleProjectUpdate = (updatedProject) => {
-    setProjects(prevProjects => 
-      prevProjects.map(project => 
-        project.project_id === updatedProject.project_id ? updatedProject : project
+    setProjects((prevProjects) =>
+      prevProjects.map((project) =>
+        project.project_id === updatedProject.project_id
+          ? updatedProject
+          : project
       )
     );
     setSelectedProject(updatedProject);
   };
+
+
+  const fetchTodos = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/todos/");
+      let filteredTodos = response.data;
+      
+      // Update the tasks state in parent component
+      console.log("this should be the response.data", response.data);
+      setTasks(response.data);
+
+      if (selectedProject) {
+        filteredTodos = filteredTodos.filter(
+          (todo) => todo.project_id === selectedProject
+        );
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const next7Days = new Date();
+      next7Days.setDate(today.getDate() + 7);
+      next7Days.setHours(0, 0, 0, 0); 
+
+      if (activeItem === "today") {
+        filteredTodos = filteredTodos.filter((todo) => {
+          const dueDate = new Date(todo.due_date);
+          dueDate.setHours(0, 0, 0, 0); 
+          return dueDate.getTime() === today.getTime(); 
+        });
+      } else if (activeItem === "next7Days") {
+        filteredTodos = filteredTodos.filter((todo) => {
+          const dueDate = new Date(todo.due_date);
+          dueDate.setHours(0, 0, 0, 0); 
+          return dueDate >= today && dueDate < next7Days; 
+        });
+      }
+
+      setTasks(filteredTodos);
+    } catch (error) {
+      console.error("Error fetching todos:", error);
+    }
+  };
+
+
+  const fetchProjects = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/projects/");
+      setProjects(response.data);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+   
+  
 
   return (
     <>
@@ -84,6 +137,7 @@ function App() {
           setProjects={setProjects}
           setSelectedProject={setSelectedProject}
           openEditForm={openEditForm}
+          fetchProjects={fetchProjects}
         />
         <div
           className={`main-container-wrapper no-transition ${
@@ -92,30 +146,33 @@ function App() {
         >
           <MainContainer
             toggleTodoModal={toggleTodoModal}
-            selectedProject={selectedProject}
             handleSelectedProject={handleSelectedProject}
             projects={projects}
             setProjects={setProjects}
             activeItem={activeItem}
-            openEditForm={openEditForm} 
+            openEditForm={openEditForm}
+            selectedProject={selectedProject}
             tasks={tasks}
             setTasks={setTasks}
             openEditTaskForm={openEditTaskForm}
+            fetchTodos={fetchTodos}
           />
         </div>
         {isTodoFormOpen && (
           <AddTaskModal
             setIsTodoFormOpen={setIsTodoFormOpen}
             selectedProject={selectedProject}
+            fetchTodos={fetchTodos}
           />
         )}
         <Modal
           isOpen={isProjectFormOpen}
           onClose={() => setIsProjectFormOpen(false)}
         >
-          <AddProjectForm setIsProjectFormOpen={setIsProjectFormOpen} />
+          <AddProjectForm setIsProjectFormOpen={setIsProjectFormOpen} fetchProjects={fetchProjects} />
+
         </Modal>
-        {/* Full screen modal for editing project */}
+        
         {isEditFormOpen && selectedProject && (
           <Modal isOpen={isEditFormOpen} onClose={closeEditForm}>
             <EditProjectForm
@@ -126,10 +183,14 @@ function App() {
           </Modal>
         )}
         {isEditTaskFormOpen && selectedTask && (
-          <Modal isOpen={isEditTaskFormOpen} onClose={() => setIsEditTaskFormOpen(false)}>
-            <EditTaskModal 
-              setIsEditTaskFormOpen={setIsEditTaskFormOpen} 
-              selectedTask={selectedTask} 
+          <Modal
+            isOpen={isEditTaskFormOpen}
+            onClose={() => setIsEditTaskFormOpen(false)}
+          >
+            <EditTaskModal
+              setIsEditTaskFormOpen={setIsEditTaskFormOpen}
+              selectedTask={selectedTask}
+              fetchTodos={fetchTodos}
             />
           </Modal>
         )}

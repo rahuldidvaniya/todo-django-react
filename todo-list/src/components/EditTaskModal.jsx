@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
 
-export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask }) {
+export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask, fetchTodos }) {
   EditTaskModal.propTypes = {
     setIsEditTaskFormOpen: PropTypes.func.isRequired,
     selectedTask: PropTypes.shape({
@@ -13,6 +13,7 @@ export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask }) {
       priority: PropTypes.string.isRequired,
       due_date: PropTypes.string,
       project_id: PropTypes.string.isRequired,
+      fetchTodos: PropTypes.func.isRequired,
     }).isRequired,
   };
 
@@ -50,6 +51,7 @@ export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask }) {
         );
         console.log("Todo updated:", response.data);
         closeModal();
+        fetchTodos();
       } catch (error) {
         console.error("Error updating todo:", error);
       }

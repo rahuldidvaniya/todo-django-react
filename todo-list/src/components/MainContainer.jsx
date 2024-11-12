@@ -9,12 +9,17 @@ export default function MainContainer({
   tasks,
   setTasks,
   openEditTaskForm,
+  fetchTodos,
 }) {
   MainContainer.propTypes = {
     toggleTodoModal: PropTypes.func.isRequired,
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
     selectedProject: PropTypes.number,
     activeItem: PropTypes.string.isRequired,
+    tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
+    setTasks: PropTypes.func.isRequired,
+    openEditTaskForm: PropTypes.func.isRequired,
+    fetchTodos: PropTypes.func.isRequired,
   }; 
 
 
@@ -40,7 +45,8 @@ export default function MainContainer({
         activeItem={activeItem}
         tasks={tasks}
         setTasks={setTasks}
-       openEditTaskForm={openEditTaskForm}
+        openEditTaskForm={openEditTaskForm}
+        fetchTodos={fetchTodos}
       />
     </div>
   );

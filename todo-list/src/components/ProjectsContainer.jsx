@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import ProjectItem from "./ProjectItem";
 
 export default function ProjectsContainer({
-
   toggleProjectForm,
   selectedProject,
   handleSelectedProject,
@@ -13,16 +12,8 @@ export default function ProjectsContainer({
   fetchProjects,
 }) {
   ProjectsContainer.propTypes = {
-    isProjectFormOpen: PropTypes.bool.isRequired,
     toggleProjectForm: PropTypes.func.isRequired,
-    selectedProject: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.shape({
-        project_id: PropTypes.number.isRequired,
-        project_name: PropTypes.string.isRequired,
-        description: PropTypes.string
-      })
-    ]),
+    selectedProject: PropTypes.number,
     handleSelectedProject: PropTypes.func.isRequired,
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
     setProjects: PropTypes.func.isRequired,
@@ -31,12 +22,9 @@ export default function ProjectsContainer({
   };
 
   useEffect(() => {
-   
-
     fetchProjects();
   }, []);
 
- 
   const removeProject = (id) => {
     setProjects((prevProject) =>
       prevProject.filter((project) => project.project_id !== id)
@@ -64,7 +52,6 @@ export default function ProjectsContainer({
         <img src="icons/queue.png" alt="Add Project" className="icon" />
         <p>Add Project</p>
       </div>
-     
     </>
   );
 }

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
+import { toast } from 'react-toastify';
 
 export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask, fetchTodos }) {
   EditTaskModal.propTypes = {
@@ -52,8 +53,10 @@ export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask, fet
         console.log("Todo updated:", response.data);
         closeModal();
         fetchTodos();
+        toast.success("Task updated successfully! 🎉");
       } catch (error) {
         console.error("Error updating todo:", error);
+        toast.error("Failed to update task!");
       }
     },
   });

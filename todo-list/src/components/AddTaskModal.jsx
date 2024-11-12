@@ -2,6 +2,7 @@ import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
+import { toast } from 'react-toastify';
 
 export default function AddTaskModal({ setIsTodoFormOpen, selectedProject, fetchTodos }) {
   AddTaskModal.propTypes = {
@@ -44,8 +45,10 @@ export default function AddTaskModal({ setIsTodoFormOpen, selectedProject, fetch
         console.log("Todo added:", response.data);
         closeModal();
         fetchTodos();
+        toast.success("Task added successfully! 🎉");
       } catch (error) {
         console.error("Error adding todo:", error);
+        toast.error("Failed to add task!");
       }
     },
   });

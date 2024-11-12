@@ -1,6 +1,8 @@
 import axios from "axios";
 import PropTypes from "prop-types";
 import { useState, useRef, useEffect } from "react";
+import { toast } from 'react-toastify';
+
 
 export default function ProjectItem({
   project,
@@ -27,8 +29,10 @@ export default function ProjectItem({
         );
         setIsMenuOpen(false);
         fetchProjects();
+        toast.success("Project deleted successfully! 🎉");
       } catch (error) {
         console.error("Failed to delete project:", error);
+        toast.error("Failed to delete project!");
       }
     }
   };

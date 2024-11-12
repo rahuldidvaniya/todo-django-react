@@ -2,8 +2,9 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import PropTypes from "prop-types";
+import { toast } from 'react-toastify';
 
-export default function EditProjectForm({ setIsEditFormOpen, project, onEditProject }) {
+export default function EditProjectForm({ setIsEditFormOpen, project, onEditProject, setSelectedProject }) {
   EditProjectForm.propTypes = {
     setIsEditFormOpen: PropTypes.func.isRequired,
     project: PropTypes.shape({
@@ -11,7 +12,8 @@ export default function EditProjectForm({ setIsEditFormOpen, project, onEditProj
       project_name: PropTypes.string.isRequired,
       description: PropTypes.string
     }).isRequired,
-    onEditProject: PropTypes.func.isRequired
+    onEditProject: PropTypes.func.isRequired,
+    setSelectedProject: PropTypes.func.isRequired
   };
 
   const initialValues = {
@@ -41,9 +43,12 @@ export default function EditProjectForm({ setIsEditFormOpen, project, onEditProj
         };
         onEditProject(updatedProject);
         setIsEditFormOpen(false);
+        setSelectedProject(updatedProject.project_id);
+        toast.success("Project updated successfully! 🎉");
       }
     } catch (error) {
       console.error("There was an error updating the project!", error);
+      toast.error("Failed to update project!");
     }
     setSubmitting(false);
   };

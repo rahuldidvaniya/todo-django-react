@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
+import { toast } from 'react-toastify';
 
 export default function TodoItem(props) {
   TodoItem.propTypes = {
@@ -35,8 +36,10 @@ export default function TodoItem(props) {
         await axios.delete(`http://127.0.0.1:8000/api/todos/${props.id}/`);
         setIsMenuOpen(false);
         props.refreshTodos();
+        toast.success("Task deleted successfully! 🎉");
       } catch (error) {
         console.error("Failed to delete todo:", error);
+        toast.error("Failed to delete task!");
       }
     }
   };
@@ -46,9 +49,14 @@ export default function TodoItem(props) {
       await axios.put(`http://127.0.0.1:8000/api/todo/completed/${props.id}/`);
       setIsCompleted(!isCompleted);
       props.fetchTodos();
-     
+      
+      toast.success(!isCompleted 
+        ? "Task marked as completed! 🎉" 
+        : "Task marked as incomplete");
+      
     } catch (error) {
       console.error("Failed to update todo status:", error);
+      toast.error("Failed to update task status!");
     }
   };
 

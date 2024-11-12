@@ -32,6 +32,14 @@
 
   /* Highlight Colors */
   --highlight-color: #e9c46a; /* Soft Yellow */
+
+  --toastify-color-success: var(--primary-color, #84a98c);
+  --toastify-color-error: #e76f51;
+  --toastify-color-warning: var(--highlight-color, #f4a261);
+  --toastify-color-info: var(--accent-color, #2f3e46);
+  
+  --toastify-text-color-light: var(--background-color, #fff);
+  --toastify-text-color-dark: var(--text-color, #333);
 }
 
 /*
@@ -823,4 +831,35 @@ textarea.todo-desc-input {
     padding: 12px; /* Increased padding for better touch targets */
     font-size: 16px; /* Increased font size for better readability */
   }
+}
+
+/* Custom Toast Container Styles */
+.Toastify__toast {
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.Toastify__toast--success {
+  background: var(--toastify-color-success);
+  color: var(--toastify-text-color-light);
+}
+
+.Toastify__toast--error {
+  background: var(--toastify-color-error);
+  color: var(--toastify-text-color-light);
+}
+
+.Toastify__toast--warning {
+  background: var(--toastify-color-warning);
+  color: var(--toastify-text-color-dark);
+}
+
+.Toastify__toast--info {
+  background: var(--toastify-color-info);
+  color: var(--toastify-text-color-light);
+}
+
+.Toastify__progress-bar {
+  background: rgba(255, 255, 255, 0.7);
 }

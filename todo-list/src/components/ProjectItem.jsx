@@ -10,6 +10,8 @@ export default function ProjectItem({
   selectedProject,
   openEditForm,
   fetchProjects,
+  setActiveItem,
+  fetchTodos,
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -28,7 +30,12 @@ export default function ProjectItem({
           `http://127.0.0.1:8000/api/projects/${project.project_id}/`
         );
         setIsMenuOpen(false);
+        setActiveItem("allTasks");
+        handleSelectedProject(null);
         fetchProjects();
+        fetchTodos();
+        
+
         toast.success("Project deleted successfully! 🎉");
       } catch (error) {
         console.error("Failed to delete project:", error);

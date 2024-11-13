@@ -47,16 +47,21 @@ export default function TodoItem(props) {
   const toggleCompletion = async () => {
     try {
       await axios.put(`http://127.0.0.1:8000/api/todo/completed/${props.id}/`);
-      setIsCompleted(!isCompleted);
+      const newCompletionStatus = !isCompleted;
+      setIsCompleted(newCompletionStatus);
       props.fetchTodos();
       
-      toast.success(!isCompleted 
-        ? "Task marked as completed! 🎉" 
-        : "Task marked as incomplete");
+      if (newCompletionStatus) {
+        toast.success("Task marked as completed! 🎉", {
+          toastId: `complete-${props.id}`,
+        });
+      }
       
     } catch (error) {
       console.error("Failed to update todo status:", error);
-      toast.error("Failed to update task status!");
+      toast.error("Failed to update task status!", {
+        toastId: `error-${props.id}`,
+      });
     }
   };
 

@@ -13,6 +13,7 @@ export default function Sidebar({
   setSelectedProject,
   openEditForm,
   fetchProjects,
+  fetchTodos,
 }) {
   Sidebar.propTypes = {
     isSidebarOpen: PropTypes.bool.isRequired,
@@ -77,6 +78,8 @@ export default function Sidebar({
         setProjects={setProjects}
         openEditForm={openEditForm}
         fetchProjects={fetchProjects}
+        setActiveItem={setActiveItem}
+        fetchTodos={fetchTodos}
       />
     </aside>
   );

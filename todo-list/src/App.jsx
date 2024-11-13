@@ -130,7 +130,7 @@ function App() {
           if (!todo.due_date) return false;
           const dueDate = new Date(todo.due_date);
           dueDate.setHours(0, 0, 0, 0);
-          return dueDate.getTime() === today.getTime() && !todo.is_completed;
+          return dueDate.getTime() === today.getTime();
         });
       } else if (activeItem === "next7Days") {
         const today = new Date();
@@ -142,11 +142,44 @@ function App() {
           if (!todo.due_date) return false;
           const dueDate = new Date(todo.due_date);
           dueDate.setHours(0, 0, 0, 0);
-          return dueDate >= today && dueDate <= next7Days && !todo.is_completed;
+          return dueDate >= today && dueDate <= next7Days;
         });
       }
 
-      setTasks(filteredTodos);
+      // Sort todos by priority order
+      const priorityOrder = { high: 1, medium: 2, low: 3 };
+
+      // Sort function that considers overdue, completion status, and priority
+      const sortTodos = (a, b) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const isOverdueA = new Date(a.due_date) < today && !a.is_completed;
+        const isOverdueB = new Date(b.due_date) < today && !b.is_completed;
+
+        // First, sort by overdue status
+        if (isOverdueA && !isOverdueB) return -1;
+        if (!isOverdueA && isOverdueB) return 1;
+
+        // Then, sort by completion status
+        if (!a.is_completed && b.is_completed) return -1;
+        if (a.is_completed && !b.is_completed) return 1;
+
+        // For tasks with the same completion status, sort by priority
+        if (!a.is_completed && !b.is_completed) {
+          if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+          }
+          // If priorities are the same, sort by due date
+          return new Date(a.due_date) - new Date(b.due_date);
+        }
+
+        // For completed tasks, sort by completion date (if you have this field)
+        // return new Date(b.completed_at) - new Date(a.completed_at);
+        return 0;
+      };
+
+      setTasks(filteredTodos.sort(sortTodos));
     } catch (error) {
       console.error("Error fetching todos:", error);
       showToast.error("Failed to fetch tasks!");
@@ -179,6 +212,7 @@ function App() {
           setSelectedProject={setSelectedProject}
           openEditForm={openEditForm}
           fetchProjects={fetchProjects}
+          fetchTodos={fetchTodos}
         />
         <div className={`main-container-wrapper no-transition ${isSidebarOpen ? "" : "shifted"}`}>
           <MainContainer
@@ -231,7 +265,7 @@ function App() {
       </div>
       <ToastContainer
         position="bottom-right"
-        autoClose={3000}
+        autoClose={2000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
@@ -243,6 +277,7 @@ function App() {
         icon={true}
         closeButton={true}
         transition={Slide}
+        limit={3}
       />
     </>
   );

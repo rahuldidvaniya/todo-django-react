@@ -10,6 +10,8 @@ export default function ProjectsContainer({
   setProjects,
   openEditForm,
   fetchProjects,
+  setActiveItem,
+  fetchTodos,
 }) {
   ProjectsContainer.propTypes = {
     toggleProjectForm: PropTypes.func.isRequired,
@@ -19,6 +21,7 @@ export default function ProjectsContainer({
     setProjects: PropTypes.func.isRequired,
     openEditForm: PropTypes.func.isRequired,
     fetchProjects: PropTypes.func.isRequired,
+    setActiveItem: PropTypes.func.isRequired,
   };
 
   useEffect(() => {
@@ -45,6 +48,9 @@ export default function ProjectsContainer({
             refreshProjects={() => removeProject(project.project_id)}
             openEditForm={openEditForm}
             fetchProjects={fetchProjects}
+            setActiveItem={setActiveItem}
+            fetchTodos={fetchTodos}
+          
           />
         ))}
       </div>

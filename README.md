@@ -94,10 +94,7 @@ npm install
 cp .env.example .env
 ```
 
-Update `.env` with your backend URL:
-```env
-VITE_API_URL=http://localhost:8000
-```
+
 
 ## Running the Application
 

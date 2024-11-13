@@ -20,6 +20,11 @@ cd task-management
 
 ### 2. Backend Setup
 
+#### Navigate to Backend Directory
+```bash
+cd backend
+```
+
 #### Create and Activate Virtual Environment
 ```bash
 # Windows
@@ -34,22 +39,6 @@ source venv/bin/activate
 #### Install Python Dependencies
 ```bash
 pip install -r requirements.txt
-```
-
-#### Configure Database Settings
-Update `backend/settings.py` with your PostgreSQL credentials:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'todo_app_db',
-        'USER': 'your_username',
-        'PASSWORD': 'your_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
 ```
 
 #### Environment Variables Setup
@@ -72,14 +61,25 @@ DB_HOST=localhost
 DB_PORT=5432
 ```
 
-```
+#### Configure Database Settings
+Update `backend/settings.py` to use environment variables:
+```python
+from dotenv import load_dotenv
+import os
 
-4. Add python-dotenv to requirements.txt:
-```bash
-echo "python-dotenv==1.0.0" >> requirements.txt
-```
+load_dotenv()
 
-> **Note**: Never commit your `.env` file to version control. Make sure it's listed in your `.gitignore` file.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+    }
+}
+```
 
 ### 3. Database Setup
 
@@ -119,23 +119,36 @@ cd todo-list
 # Install dependencies
 npm install
 
-# Create .env file
-cp .env.example .env
-```
+
 
 
 
 ## Running the Application
 
-### Start Backend Server
+### Start Backend and Frontend Servers
+Open two separate terminal windows/tabs:
+
+#### Terminal 1 (Backend):
 ```bash
-# From project root
+# Navigate to backend directory
+cd backend
+
+# Activate virtual environment
+# For Windows:
+venv\Scripts\activate
+# For Linux/MacOS:
+source venv/bin/activate
+
+# Start backend server
 python manage.py runserver
 ```
 
-### Start Frontend Development Server
+#### Terminal 2 (Frontend):
 ```bash
-# From todo-list directory
+# Navigate to frontend directory
+cd todo-list
+
+# Start frontend development server
 npm run dev
 ```
 
@@ -155,6 +168,7 @@ The application will be available at:
 - `GET /api/todos/` - List all tasks
 - `POST /api/todos/create/` - Create new task
 - `PATCH /api/todos/edit/:id/` - Edit task
+- `PATCH /api/todos/toggle/:id/` - Toggle task completion status
 - `DELETE /api/todos/:id/` - Delete task
 
 ## Database Management
@@ -175,7 +189,7 @@ task-management/
 ├── backend/
 │   ├── core/           # Main Django app
 │   │   ├── views.py    # API views
-│   │   ├── models.py   # Database models
+│   │   ├── models.py   # Models for seriliazation
 │   │   └── urls.py     # URL routing
 │   └── backend/        # Django settings
 ├── todo-list/          # React frontend
@@ -204,14 +218,5 @@ task-management/
    - Verify CORS settings in backend/settings.py
    - Check if frontend URL is listed in ALLOWED_HOSTS
 
-## Development Guidelines
 
-1. **Database Changes**
-   - Test stored procedures individually before deployment
-   - Keep init.sql updated with any new database changes
-
-2. **API Development**
-   - Follow RESTful conventions
-   - Include error handling for database operations
-   - Log important operations and errors
 

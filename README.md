@@ -52,6 +52,35 @@ DATABASES = {
 }
 ```
 
+#### Environment Variables Setup
+1. Create a `.env` file in the root directory:
+```bash
+# Create .env file
+touch .env  # For Linux/MacOS
+# or
+type nul > .env  # For Windows
+```
+
+2. Add the following variables to your `.env` file:
+```plaintext
+DEBUG=True
+SECRET_KEY=your-secret-key-here
+DB_NAME=todo_app_db
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_HOST=localhost
+DB_PORT=5432
+```
+
+```
+
+4. Add python-dotenv to requirements.txt:
+```bash
+echo "python-dotenv==1.0.0" >> requirements.txt
+```
+
+> **Note**: Never commit your `.env` file to version control. Make sure it's listed in your `.gitignore` file.
+
 ### 3. Database Setup
 
 #### Create Database

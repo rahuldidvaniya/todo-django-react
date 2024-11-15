@@ -43,6 +43,21 @@ class ProjectCreateViewTests(APITestCase):
             response = self.client.post(url, data, format='json')
             
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    def test_create_project_unexpected_error(self):
+        """Test project creation with unexpected error"""
+        url = reverse('create-project')
+        data = {
+            'name': 'Test Project',
+            'description': 'Test Description'
+        }
+        
+        with patch('django.db.connection.cursor') as mock_cursor:
+            mock_cursor.return_value.__enter__.return_value.callproc.side_effect = Exception("Unexpected error")
+            response = self.client.post(url, data, format='json')
+            
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.data['detail'], "An unexpected error occurred. Please try again later.")
 
 class ProjectListViewTests(APITestCase):
     def test_list_projects_success(self):
@@ -68,6 +83,18 @@ class ProjectListViewTests(APITestCase):
             response = self.client.get(url)
             
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    def test_list_projects_empty(self):
+        """Test project listing with no projects"""
+        url = reverse('projects')
+        
+        with patch('django.db.connection.cursor') as mock_cursor:
+            mock_cursor_cm = mock_cursor.return_value.__enter__.return_value
+            mock_cursor_cm.rowcount = 0
+            response = self.client.get(url)
+            
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])
 
 class TodoCreateViewTests(APITestCase):
     def test_create_todo_success(self):
@@ -131,6 +158,18 @@ class TodoDeleteViewTests(APITestCase):
             
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def test_delete_nonexistent_todo(self):
+        """Test deletion of non-existent todo"""
+        url = reverse('delete-todo', args=[999])
+        
+        with patch('django.db.connection.cursor') as mock_cursor:
+            mock_cursor_cm = mock_cursor.return_value.__enter__.return_value
+            mock_cursor_cm.fetchone.return_value = [False]
+            response = self.client.delete(url)
+            
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['detail'], "Todo not found")
+
 class ToggleTodoCompletedTests(APITestCase):
     def setUp(self):
         self.todo_id = 1
@@ -169,7 +208,9 @@ class EditProjectTests(APITestCase):
         }
         
         with patch('django.db.connection.cursor') as mock_cursor:
-            mock_cursor.return_value.__enter__.return_value.callproc.return_value = None
+            mock_cursor_cm = mock_cursor.return_value.__enter__.return_value
+            mock_cursor_cm.fetchone.return_value = [True]
+            mock_cursor_cm.callproc.return_value = None
             response = self.client.patch(url, data, format='json')
             
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -178,8 +219,47 @@ class EditProjectTests(APITestCase):
         """Test project edit with invalid data"""
         url = reverse('edit-project', args=[1])
         data = {'description': 'Missing name field'}
-        response = self.client.patch(url, data, format='json')
+        
+        with patch('django.db.connection.cursor') as mock_cursor:
+            mock_cursor_cm = mock_cursor.return_value.__enter__.return_value
+            mock_cursor_cm.fetchone.return_value = [True]
+            mock_cursor_cm.callproc.return_value = None
+            response = self.client.patch(url, data, format='json')
+            
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_edit_nonexistent_project(self):
+        """Test editing non-existent project"""
+        url = reverse('edit-project', args=[999])
+        data = {
+            'name': 'Updated Project',
+            'description': 'Updated Description'
+        }
+        
+        with patch('django.db.connection.cursor') as mock_cursor:
+            mock_cursor_cm = mock_cursor.return_value.__enter__.return_value
+            mock_cursor_cm.fetchone.return_value = [False]
+            response = self.client.patch(url, data, format='json')
+            
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['detail'], "Project not found")
+
+    def test_edit_project_unexpected_error(self):
+        """Test project edit with unexpected error"""
+        url = reverse('edit-project', args=[1])
+        data = {
+            'name': 'Updated Project',
+            'description': 'Updated Description'
+        }
+        
+        with patch('django.db.connection.cursor') as mock_cursor:
+            mock_cursor_cm = mock_cursor.return_value.__enter__.return_value
+            mock_cursor_cm.fetchone.return_value = [True]
+            mock_cursor_cm.callproc.side_effect = Exception("Unexpected error")
+            response = self.client.patch(url, data, format='json')
+            
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.data['detail'], "An unexpected error occurred. Please try again later.")
 
 class EditTodoTests(APITestCase):
     def test_edit_todo_success(self):
@@ -203,5 +283,12 @@ class EditTodoTests(APITestCase):
         """Test todo edit with invalid data"""
         url = reverse('edit-todo', args=[1])
         data = {'title': 'Missing required fields'}
-        response = self.client.patch(url, data, format='json')
+        
+        with patch('django.db.connection.cursor') as mock_cursor:
+            mock_cursor_cm = mock_cursor.return_value.__enter__.return_value
+            mock_cursor_cm.fetchone.return_value = [True]
+            mock_cursor_cm.callproc.return_value = None
+            mock_cursor_cm.fetchone.return_value = [True]
+            response = self.client.patch(url, data, format='json')
+            
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

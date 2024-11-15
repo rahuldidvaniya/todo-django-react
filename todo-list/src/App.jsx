@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import "./App.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
@@ -84,7 +84,7 @@ function App() {
     setSelectedProject(updatedProject);
   };
 
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/api/todos/");
       let filteredTodos = response.data;
@@ -182,9 +182,11 @@ function App() {
       setTasks(filteredTodos.sort(sortTodos));
     } catch (error) {
       console.error("Error fetching todos:", error);
-      showToast.error("Failed to fetch tasks!");
+      if (!error.response || error.response.status >= 500) {
+        showToast.error("Failed to fetch tasks!");
+      }
     }
-  };
+  }, [selectedProject, activeItem]);
 
   const fetchProjects = async () => {
     try {

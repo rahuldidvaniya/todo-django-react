@@ -320,12 +320,15 @@ class ToggleTodoCompleted(APIView):
         Returns:
             bool: True if todo exists, False otherwise
         """
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT EXISTS (SELECT 1 FROM public.todos WHERE id = %s)",
-                [id]
-            )
-            return cursor.fetchone()[0]
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT EXISTS (SELECT 1 FROM public.todos WHERE id = %s)",
+                    [id]
+                )
+                return cursor.fetchone()[0]
+        except DatabaseError:
+            return False
 
 
 class EditProject(APIView):
@@ -350,20 +353,21 @@ class EditProject(APIView):
         
         serializer = ProjectSerializer(data=request.data, partial=True)
         if serializer.is_valid():
-            name = serializer.validated_data['name']
-            description = serializer.validated_data.get('description', '')
-
             try:
                 with connection.cursor() as cursor:
+                    # Only update fields that are present in the request
+                    name = serializer.validated_data.get('name')
+                    description = serializer.validated_data.get('description')
+                    
+                    if name is None and description is None:
+                        return Response(
+                            {"detail": "No valid fields to update"},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    
                     cursor.callproc('edit_project', [id, name, description])
                 return Response(serializer.data, status=status.HTTP_200_OK)
                 
-            except DatabaseError as db_error:
-                logger.error(f"Database error updating project {id}: {db_error}")
-                return Response(
-                    {"detail": "Database error occurred. Please try again later."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
             except Exception as error:
                 logger.error(f"Unexpected error updating project {id}: {error}")
                 return Response(
@@ -371,16 +375,18 @@ class EditProject(APIView):
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
                 
-        logger.warning(f"Project update validation failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def _project_exists(self, id):
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT EXISTS (SELECT 1 FROM public.projects WHERE id = %s)",
-                [id]
-            )
-            return cursor.fetchone()[0]
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT EXISTS (SELECT 1 FROM public.projects WHERE id = %s)",
+                    [id]
+                )
+                return cursor.fetchone()[0]
+        except DatabaseError:
+            return False
 
 
 class EditTodo(APIView):

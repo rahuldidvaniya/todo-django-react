@@ -154,7 +154,7 @@ cython_debug/
 
 # Database backups
 *.dump
-*.sql
+
 *.sqlite3-journal
 
 # Docker

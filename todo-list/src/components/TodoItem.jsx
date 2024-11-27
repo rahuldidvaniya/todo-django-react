@@ -50,9 +50,7 @@ export default function TodoItem(props) {
     
     try {
       await axios.put(`http://127.0.0.1:8000/api/todo/completed/${props.id}/`);
-      if (activeItem === "today" || activeItem === "next7Days") {
-        props.fetchTodos();
-      }
+      toast.success("Task status updated successfully! 🎉");
     } catch (error) {
       setIsCompleted(!newCompletionStatus);
       console.error("Failed to update todo status:", error);

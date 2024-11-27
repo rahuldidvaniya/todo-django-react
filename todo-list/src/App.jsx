@@ -279,7 +279,7 @@ function App() {
         icon={true}
         closeButton={true}
         transition={Slide}
-        limit={3}
+        limit={1}
       />
     </>
   );

@@ -1,5 +1,7 @@
 import PropTypes from "prop-types"; // Import PropTypes
 import ProjectsContainer from "./ProjectsContainer";
+import { VIEW_MODES } from '../constants/constants';
+
 export default function Sidebar({
   isSidebarOpen,
   activeItem,
@@ -32,7 +34,7 @@ export default function Sidebar({
 
   const handleItemClick = (item) => {
     if (item === activeItem) {
-      setActiveItem("allTasks");
+      setActiveItem(VIEW_MODES.ALL_TASKS);
       setSelectedProject(null);
     } else {
       setActiveItem(item);
@@ -47,22 +49,22 @@ export default function Sidebar({
       <hr />
       <div className="home-container">
         <div
-          className={`home-item ${activeItem === "allTasks" ? "active" : ""}`}
-          onClick={() => handleItemClick("allTasks")}
+          className={`home-item ${activeItem === VIEW_MODES.ALL_TASKS ? "active" : ""}`}
+          onClick={() => handleItemClick(VIEW_MODES.ALL_TASKS)}
         >
           <img src="icons/check-list.png" className="icon" alt="" />
           <p>All Tasks</p>
         </div>
         <div
-          className={`home-item ${activeItem === "today" ? "active" : ""}`}
-          onClick={() => handleItemClick("today")}
+          className={`home-item ${activeItem === VIEW_MODES.TODAY ? "active" : ""}`}
+          onClick={() => handleItemClick(VIEW_MODES.TODAY)}
         >
           <img src="icons/today.png" className="icon" alt="" />
           <p>Today</p>
         </div>
         <div
-          className={`home-item ${activeItem === "next7Days" ? "active" : ""}`}
-          onClick={() => handleItemClick("next7Days")}
+          className={`home-item ${activeItem === VIEW_MODES.NEXT_7_DAYS ? "active" : ""}`}
+          onClick={() => handleItemClick(VIEW_MODES.NEXT_7_DAYS)}
         >
           <img src="icons/7-days.png" className="icon" alt="" />
           <p>Next 7 Days</p>

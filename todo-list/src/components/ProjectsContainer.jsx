@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 import ProjectItem from "./ProjectItem";
+import { showToast } from "../utils/toastConfig";
 
 export default function ProjectsContainer({
   toggleProjectForm,
@@ -22,6 +23,7 @@ export default function ProjectsContainer({
     openEditForm: PropTypes.func.isRequired,
     fetchProjects: PropTypes.func.isRequired,
     setActiveItem: PropTypes.func.isRequired,
+    fetchTodos: PropTypes.func.isRequired,
   };
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types"; // Import PropTypes
-
+import { api } from "../services/api";
 export default function TodoForm({ onAddTodo }) {
   TodoForm.propTypes = {
     onAddTodo: PropTypes.func.isRequired,
@@ -9,17 +8,13 @@ export default function TodoForm({ onAddTodo }) {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState("medium"); // Default value
-
+  const [priority, setPriority] = useState("medium"); 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const newTodo = { title, description, priority };
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/todos/",
-        newTodo
-      );
-      onAddTodo(response.data); // Call the callback with the new todo data
+      const response = await api.createTodo(newTodo);
+      onAddTodo(response.data); 
       // Reset form
       setTitle("");
       setDescription("");

@@ -1,8 +1,8 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import PropTypes from "prop-types";
-import { toast } from 'react-toastify';
+import { showToast } from "../utils/toastConfig";
+import { api } from '../services/api';
 
 export default function AddProjectForm({ setIsProjectFormOpen, fetchProjects }) {
   AddProjectForm.propTypes = {
@@ -26,16 +26,13 @@ export default function AddProjectForm({ setIsProjectFormOpen, fetchProjects }) 
 
   const onSubmit = async (values, { setSubmitting }) => {
     try {
-      await axios.post(
-        "http://localhost:8000/api/projects/create/",
-        values
-      );
+      await api.createProject(values);
       await fetchProjects();
-      toast.success("Project added successfully! 🎉");
+      showToast.success("Project added successfully! 🎉");
       setIsProjectFormOpen(false);
     } catch (error) {
       console.error("There was an error!", error);
-      toast.error("Failed to add project!");
+      showToast.error("Failed to add project!");
     } finally {
       setSubmitting(false);
     }

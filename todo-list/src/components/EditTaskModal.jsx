@@ -1,8 +1,8 @@
-import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
-import { toast } from 'react-toastify';
+import { showToast } from "../utils/toastConfig";
+import { api } from "../services/api";
 
 export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask, fetchTodos }) {
   EditTaskModal.propTypes = {
@@ -15,6 +15,7 @@ export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask, fet
       due_date: PropTypes.string,
       project_id: PropTypes.string.isRequired,
       fetchTodos: PropTypes.func.isRequired,
+
     }).isRequired,
   };
 
@@ -46,17 +47,14 @@ export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask, fet
         project_id: selectedTask.project_id,
       };
       try {
-        const response = await axios.patch(
-          `http://localhost:8000/api/todos/edit/${selectedTask.id}/`,
-          todoData
-        );
+        const response = await api.editTodo(selectedTask.id, todoData);
         console.log("Todo updated:", response.data);
         closeModal();
         fetchTodos();
-        toast.success("Task updated successfully! 🎉");
+        showToast.success("Task updated successfully! 🎉");
       } catch (error) {
         console.error("Error updating todo:", error);
-        toast.error("Failed to update task!");
+        showToast.error("Failed to update task!");
       }
     },
   });

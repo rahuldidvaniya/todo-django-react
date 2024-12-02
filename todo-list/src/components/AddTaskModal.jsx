@@ -1,8 +1,9 @@
-import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
-import { toast } from 'react-toastify';
+import { showToast } from "../utils/toastConfig";
+import { api } from "../services/api";
+import { PRIORITY_LEVELS } from '../constants/constants';
 
 export default function AddTaskModal({ setIsTodoFormOpen, selectedProject, fetchTodos }) {
   AddTaskModal.propTypes = {
@@ -28,7 +29,7 @@ export default function AddTaskModal({ setIsTodoFormOpen, selectedProject, fetch
     initialValues: {
       title: "",
       description: "",
-      priority: "low",
+      priority: PRIORITY_LEVELS.LOW,
       dueDate: null,
     },
     validationSchema: validationSchema,
@@ -38,17 +39,14 @@ export default function AddTaskModal({ setIsTodoFormOpen, selectedProject, fetch
         project_id: selectedProject,
       };
       try {
-        const response = await axios.post(
-          "http://localhost:8000/api/todos/create/",
-          todoData
-        );
+        const response = await api.createTodo(todoData);
         console.log("Todo added:", response.data);
         closeModal();
         fetchTodos();
-        toast.success("Task added successfully! 🎉");
+        showToast.success("Task added successfully! 🎉");
       } catch (error) {
         console.error("Error adding todo:", error);
-        toast.error("Failed to add task!");
+        showToast.error("Failed to add task!");
       }
     },
   });

@@ -1,7 +1,7 @@
-import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { toast } from 'react-toastify';
+import { showToast } from "../utils/toastConfig";
+import { api } from "../services/api";
 
 export default function TodoItem(props) {
   TodoItem.propTypes = {
@@ -33,13 +33,13 @@ export default function TodoItem(props) {
 
     if (confirmDelete) {
       try {
-        await axios.delete(`http://127.0.0.1:8000/api/todos/${props.id}/`);
+        await api.deleteTodo(props.id);
         setIsMenuOpen(false);
         props.refreshTodos();
-        toast.success("Task deleted successfully! 🎉");
+        showToast.success("Task deleted successfully! 🎉");
       } catch (error) {
         console.error("Failed to delete todo:", error);
-        toast.error("Failed to delete task!");
+        showToast.error("Failed to delete task!");
       }
     }
   };
@@ -49,12 +49,12 @@ export default function TodoItem(props) {
     setIsCompleted(newCompletionStatus);
     
     try {
-      await axios.put(`http://127.0.0.1:8000/api/todo/completed/${props.id}/`);
-      toast.success("Task status updated successfully! 🎉");
+      await api.toggleTodoCompletion(props.id);
+      showToast.success("Task status updated successfully! 🎉");
     } catch (error) {
       setIsCompleted(!newCompletionStatus);
       console.error("Failed to update todo status:", error);
-      toast.error("Failed to update task status!");
+      showToast.error("Failed to update task status!");
     }
   };
 

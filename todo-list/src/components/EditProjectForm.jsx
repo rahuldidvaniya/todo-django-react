@@ -1,8 +1,8 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
-import PropTypes from "prop-types";
-import { toast } from 'react-toastify';
+import PropTypes from "prop-types"
+import { showToast } from "../utils/toastConfig";
+import { api } from "../services/api";
 
 export default function EditProjectForm({ setIsEditFormOpen, project, onEditProject, setSelectedProject }) {
   EditProjectForm.propTypes = {
@@ -30,10 +30,7 @@ export default function EditProjectForm({ setIsEditFormOpen, project, onEditProj
 
   const onSubmit = async (values, { setSubmitting }) => {
     try {
-      const response = await axios.patch(
-        `http://localhost:8000/api/projects/edit/${project.project_id}/`,
-        values
-      );
+      const response = await api.editProject(project.project_id, values);
       
       if (response.data) {
         const updatedProject = {
@@ -44,11 +41,11 @@ export default function EditProjectForm({ setIsEditFormOpen, project, onEditProj
         onEditProject(updatedProject);
         setIsEditFormOpen(false);
         setSelectedProject(updatedProject.project_id);
-        toast.success("Project updated successfully! 🎉");
+        showToast.success("Project updated successfully! 🎉");
       }
     } catch (error) {
       console.error("There was an error updating the project!", error);
-      toast.error("Failed to update project!");
+      showToast.error("Failed to update project!");
     }
     setSubmitting(false);
   };

@@ -1,8 +1,7 @@
-import axios from "axios";
 import PropTypes from "prop-types";
 import { useState, useRef, useEffect } from "react";
-import { toast } from 'react-toastify';
-
+import { showToast } from "../utils/toastConfig";
+import { api } from "../services/api";
 
 export default function ProjectItem({
   project,
@@ -26,9 +25,7 @@ export default function ProjectItem({
     );
     if (confirmDelete) {
       try {
-        await axios.delete(
-          `http://127.0.0.1:8000/api/projects/${project.project_id}/`
-        );
+        await api.deleteProject(project.project_id);
         setIsMenuOpen(false);
         setActiveItem("allTasks");
         handleSelectedProject(null);
@@ -36,10 +33,10 @@ export default function ProjectItem({
         fetchTodos();
         
 
-        toast.success("Project deleted successfully! 🎉");
+        showToast.success("Project deleted successfully! 🎉");
       } catch (error) {
         console.error("Failed to delete project:", error);
-        toast.error("Failed to delete project!");
+        showToast.error("Failed to delete project!");
       }
     }
   };

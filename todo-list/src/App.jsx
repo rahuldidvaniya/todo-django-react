@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback } from "react";
-import "./App.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import MainContainer from "./components/MainContainer";
@@ -8,41 +7,19 @@ import Modal from "./components/Modal";
 import AddProjectForm from "./components/AddProjectForm";
 import EditProjectForm from "./components/EditProjectForm";
 import EditTaskModal from "./components/EditTaskModal";
-import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
+import { api } from './services/api';
+import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Slide } from 'react-toastify';
+import { showToast } from "./utils/toastConfig";
+import { filterTodosByTiming, sortTodosByPriority, checkOverdueAndToday } from './utils/todoFilters';
+import { VIEW_MODES } from './constants/constants';
 
-const showToast = {
-  success: (message) => {
-    toast.success(message, {
-      style: { fontSize: '14px', fontWeight: '500' },
-      progressStyle: { background: 'rgba(255, 255, 255, 0.7)' },
-    });
-  },
-  error: (message) => {
-    toast.error(message, {
-      style: { fontSize: '14px', fontWeight: '500' },
-      progressStyle: { background: 'rgba(255, 255, 255, 0.7)' },
-    });
-  },
-  warning: (message) => {
-    toast.warning(message, {
-      style: { fontSize: '14px', fontWeight: '500' },
-      progressStyle: { background: 'rgba(0, 0, 0, 0.2)' },
-    });
-  },
-  info: (message) => {
-    toast.info(message, {
-      style: { fontSize: '14px', fontWeight: '500' },
-      progressStyle: { background: 'rgba(255, 255, 255, 0.7)' },
-    });
-  }
-};
+
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeItem, setActiveItem] = useState("allTasks");
+  const [activeItem, setActiveItem] = useState(VIEW_MODES.ALL_TASKS);
   const [isProjectFormOpen, setIsProjectFormOpen] = useState(false);
   const [isTodoFormOpen, setIsTodoFormOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -86,25 +63,11 @@ function App() {
 
   const fetchTodos = useCallback(async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/todos/");
-      let filteredTodos = response.data;
+      const todos = await api.getTodos();
+      let filteredTodos = todos;
       
       if (initialLoadRef.current) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // Check for overdue tasks
-        const overdueTasks = filteredTodos.filter(todo => {
-          const dueDate = new Date(todo.due_date);
-          return dueDate < today && !todo.is_completed;
-        });
-
-        // Check for tasks due today
-        const todayTasks = filteredTodos.filter(todo => {
-          const dueDate = new Date(todo.due_date);
-          dueDate.setHours(0, 0, 0, 0);
-          return dueDate.getTime() === today.getTime() && !todo.is_completed;
-        });
+        const { overdueTasks, todayTasks } = checkOverdueAndToday(filteredTodos);
 
         if (overdueTasks.length > 0) {
           showToast.warning(`⚠️ You have ${overdueTasks.length} overdue tasks!`);
@@ -117,69 +80,11 @@ function App() {
         initialLoadRef.current = false;
       }
 
-      if (selectedProject) {
-        filteredTodos = filteredTodos.filter(
-          todo => todo.project_id === selectedProject
-        );
-      }
+      // Apply filters and sorting
+      filteredTodos = filterTodosByTiming(filteredTodos, activeItem, selectedProject);
+      filteredTodos = sortTodosByPriority(filteredTodos);
 
-      if (activeItem === "today") {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        filteredTodos = filteredTodos.filter(todo => {
-          if (!todo.due_date) return false;
-          const dueDate = new Date(todo.due_date);
-          dueDate.setHours(0, 0, 0, 0);
-          return dueDate.getTime() === today.getTime();
-        });
-      } else if (activeItem === "next7Days") {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const next7Days = new Date(today);
-        next7Days.setDate(today.getDate() + 7);
-        
-        filteredTodos = filteredTodos.filter(todo => {
-          if (!todo.due_date) return false;
-          const dueDate = new Date(todo.due_date);
-          dueDate.setHours(0, 0, 0, 0);
-          return dueDate >= today && dueDate <= next7Days;
-        });
-      }
-
-      // Sort todos by priority order
-      const priorityOrder = { high: 1, medium: 2, low: 3 };
-
-      // Sort function that considers overdue, completion status, and priority
-      const sortTodos = (a, b) => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        const isOverdueA = new Date(a.due_date) < today && !a.is_completed;
-        const isOverdueB = new Date(b.due_date) < today && !b.is_completed;
-
-        // First, sort by overdue status
-        if (isOverdueA && !isOverdueB) return -1;
-        if (!isOverdueA && isOverdueB) return 1;
-
-        // Then, sort by completion status
-        if (!a.is_completed && b.is_completed) return -1;
-        if (a.is_completed && !b.is_completed) return 1;
-
-        // For tasks with the same completion status, sort by priority
-        if (!a.is_completed && !b.is_completed) {
-          if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-            return priorityOrder[a.priority] - priorityOrder[b.priority];
-          }
-          // If priorities are the same, sort by due date
-          return new Date(a.due_date) - new Date(b.due_date);
-        }
-
-        // For completed tasks, sort by completion date (if you have this field)
-        // return new Date(b.completed_at) - new Date(a.completed_at);
-        return 0;
-      };
-
-      setTasks(filteredTodos.sort(sortTodos));
+      setTasks(filteredTodos);
     } catch (error) {
       console.error("Error fetching todos:", error);
       if (!error.response || error.response.status >= 500) {
@@ -190,10 +95,11 @@ function App() {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/projects/");
-      setProjects(response.data);
+      const projectsData = await api.getProjects();
+      setProjects(projectsData);
     } catch (error) {
       console.error("Error fetching projects:", error);
+      showToast.error("Failed to fetch projects!");
     }
   };
 

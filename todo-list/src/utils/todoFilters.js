@@ -1,14 +1,19 @@
 import { PRIORITY_ORDER, VIEW_MODES } from '../constants/constants';
 
 export const filterTodosByTiming = (todos, activeItem, selectedProject) => {
+  console.log('Filtering todos:', { todos, activeItem, selectedProject });
   let filteredTodos = [...todos];
 
   // Filter by project if selected
   if (selectedProject) {
     filteredTodos = filteredTodos.filter(
-      todo => todo.project_id === selectedProject
+      todo => {
+        console.log('Comparing:', todo.project_id, selectedProject);
+        return todo.project_id === selectedProject;
+      }
     );
   }
+  console.log('Filtered todos:', filteredTodos);
 
   // Filter by timing
   if (activeItem === VIEW_MODES.TODAY) {

@@ -1,28 +1,28 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import PropTypes from "prop-types"
 import { showToast } from "../utils/toastConfig";
 import { api } from "../services/api";
+import { useProjects } from '../hooks/useProjects';
 
-export default function EditProjectForm({ setIsEditFormOpen, project, onEditProject, setSelectedProject }) {
-  EditProjectForm.propTypes = {
-    setIsEditFormOpen: PropTypes.func.isRequired,
-    project: PropTypes.shape({
-      project_id: PropTypes.number.isRequired,
-      project_name: PropTypes.string.isRequired,
-      description: PropTypes.string
-    }).isRequired,
-    onEditProject: PropTypes.func.isRequired,
-    setSelectedProject: PropTypes.func.isRequired
-  };
+export default function EditProjectForm() {
+  const { 
+    setIsEditFormOpen, 
+    projectToEdit, 
+    handleProjectUpdate,
+    setSelectedProject 
+  } = useProjects();
+  
 
   const initialValues = {
-    name: project.project_name,
-    description: project.project_description || ""
+    name: projectToEdit.project_name,
+    description: projectToEdit.project_description || ""
   };
 
   const validationSchema = Yup.object({
-    name: Yup.string().required("Project name is required"),
+    name: Yup.string()
+      .required("Project name is required")
+      .min(3, "Project name must be at least 3 characters")
+      .max(30, "Project name cannot exceed 50 characters"),
     description: Yup.string()
       .min(10, "Description must be at least 10 characters")
       .max(200, "Description cannot exceed 200 characters")
@@ -30,15 +30,17 @@ export default function EditProjectForm({ setIsEditFormOpen, project, onEditProj
 
   const onSubmit = async (values, { setSubmitting }) => {
     try {
-      const response = await api.editProject(project.project_id, values);
+      const response = await api.editProject(projectToEdit.project_id, values);
       
-      if (response.data) {
+      
+      if (response) {
         const updatedProject = {
-          project_id: project.project_id,
+          project_id: projectToEdit.project_id,
           project_name: values.name,
           description: values.description
         };
-        onEditProject(updatedProject);
+        console.log("The updated project is", updatedProject);
+        handleProjectUpdate(updatedProject);
         setIsEditFormOpen(false);
         setSelectedProject(updatedProject.project_id);
         showToast.success("Project updated successfully! 🎉");

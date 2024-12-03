@@ -1,36 +1,21 @@
 import PropTypes from "prop-types"; // Import PropTypes
 import ProjectsContainer from "./ProjectsContainer";
 import { VIEW_MODES } from '../constants/constants';
+import { useProjects } from '../hooks/useProjects';
+import { useUI } from '../hooks/useUI';
+import { useTodos } from '../hooks/useTodos';
 
-export default function Sidebar({
-  isSidebarOpen,
-  activeItem,
-  setActiveItem,
-  isProjectFormOpen,
-  setIsProjectFormOpen,
-  selectedProject,
-  handleSelectedProject,
-  projects,
-  setProjects,
-  setSelectedProject,
-  openEditForm,
-  fetchProjects,
-  fetchTodos,
-}) {
+export default function Sidebar() {
   Sidebar.propTypes = {
     isSidebarOpen: PropTypes.bool.isRequired,
     activeItem: PropTypes.string.isRequired,
     setActiveItem: PropTypes.func.isRequired,
-    isProjectFormOpen: PropTypes.bool.isRequired,
-    setIsProjectFormOpen: PropTypes.func.isRequired,
-    selectedProject: PropTypes.number.isRequired,
-    handleSelectedProject: PropTypes.func.isRequired,
-    projects: PropTypes.arrayOf(PropTypes.object).isRequired,
-    setProjects: PropTypes.func.isRequired,
-    setSelectedProject: PropTypes.func.isRequired,
-    openEditForm: PropTypes.func.isRequired,
-    fetchProjects: PropTypes.func.isRequired,
+    fetchTodos: PropTypes.func.isRequired,
   };
+
+  const { setSelectedProject, setIsProjectFormOpen} = useProjects();
+  const {isSidebarOpen, activeItem, setActiveItem} = useUI();
+  const { fetchTodos } = useTodos();
 
   const handleItemClick = (item) => {
     if (item === activeItem) {
@@ -71,15 +56,7 @@ export default function Sidebar({
         </div>
       </div>
       <ProjectsContainer
-        isProjectFormOpen={isProjectFormOpen}
-        setIsProjectFormOpen={setIsProjectFormOpen}
         toggleProjectForm={toggleProjectForm}
-        selectedProject={selectedProject}
-        handleSelectedProject={handleSelectedProject}
-        projects={projects}
-        setProjects={setProjects}
-        openEditForm={openEditForm}
-        fetchProjects={fetchProjects}
         setActiveItem={setActiveItem}
         fetchTodos={fetchTodos}
       />

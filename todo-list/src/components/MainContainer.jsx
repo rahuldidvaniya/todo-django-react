@@ -1,28 +1,12 @@
 import TodosContainer from "./TodosContainer";
-import PropTypes from "prop-types";
+import { useProjects } from '../hooks/useProjects';
+import { useUI } from '../hooks/useUI';
 
-export default function MainContainer({
-  toggleTodoModal,
-  projects,
-  selectedProject,
-  activeItem,
-  tasks,
-  setTasks,
-  openEditTaskForm,
-  fetchTodos,
-}) {
-  MainContainer.propTypes = {
-    toggleTodoModal: PropTypes.func.isRequired,
-    projects: PropTypes.arrayOf(PropTypes.object).isRequired,
-    selectedProject: PropTypes.number,
-    activeItem: PropTypes.string.isRequired,
-    tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
-    setTasks: PropTypes.func.isRequired,
-    openEditTaskForm: PropTypes.func.isRequired,
-    fetchTodos: PropTypes.func.isRequired,
-  }; 
-
-
+export default function MainContainer() {
+  
+  const { projects, selectedProject } = useProjects();
+  const { activeItem } = useUI();
+ 
   const openedProject = projects.find(
     (project) => project.project_id === selectedProject
   );
@@ -39,15 +23,7 @@ export default function MainContainer({
           : "Complete Task List"}
       </div>
 
-      <TodosContainer
-        toggleTodoModal={toggleTodoModal}
-        selectedProject={selectedProject}
-        activeItem={activeItem}
-        tasks={tasks}
-        setTasks={setTasks}
-        openEditTaskForm={openEditTaskForm}
-        fetchTodos={fetchTodos}
-      />
+      <TodosContainer/>
     </div>
   );
 }

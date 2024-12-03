@@ -1,11 +1,10 @@
 import { useState } from "react";
-import PropTypes from "prop-types"; // Import PropTypes
+import PropTypes from "prop-types"; 
 import { api } from "../services/api";
 export default function TodoForm({ onAddTodo }) {
   TodoForm.propTypes = {
     onAddTodo: PropTypes.func.isRequired,
   };
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium"); 
@@ -15,7 +14,6 @@ export default function TodoForm({ onAddTodo }) {
       const newTodo = { title, description, priority };
       const response = await api.createTodo(newTodo);
       onAddTodo(response.data); 
-      // Reset form
       setTitle("");
       setDescription("");
       setPriority("medium");

@@ -1,27 +1,15 @@
 import TodoItem from "./TodoItem";
 import { useEffect} from "react";
-import PropTypes from "prop-types"; 
+import { useProjects } from '../hooks/useProjects';
+import { useUI } from '../hooks/useUI';
+import { useTodos } from '../hooks/useTodos';
 
-export default function TodosContainer({
-  toggleTodoModal,
-  selectedProject,
-  activeItem,
-  tasks,
-  setTasks,
-  openEditTaskForm,
-  fetchTodos
-}) {
-  TodosContainer.propTypes = {
-    toggleTodoModal: PropTypes.func.isRequired,
-    selectedProject: PropTypes.number,
-    activeItem: PropTypes.string.isRequired,
-    tasks: PropTypes.array.isRequired,
-    setTasks: PropTypes.func.isRequired,
-    openEditTaskForm: PropTypes.func.isRequired,
-    fetchTodos: PropTypes.func.isRequired,
-  };
+export default function TodosContainer() {
 
-  
+  const { selectedProject } = useProjects();
+  const { activeItem } = useUI();
+  const { tasks, setTasks, openEditTaskForm, toggleTodoModal, fetchTodos } = useTodos();
+
 
   useEffect(() => {
     fetchTodos();

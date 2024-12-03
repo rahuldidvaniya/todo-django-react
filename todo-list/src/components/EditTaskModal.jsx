@@ -3,8 +3,10 @@ import * as Yup from "yup";
 import PropTypes from "prop-types";
 import { showToast } from "../utils/toastConfig";
 import { api } from "../services/api";
+import { useTodos } from '../hooks/useTodos';
 
-export default function EditTaskModal({ setIsEditTaskFormOpen, selectedTask, fetchTodos }) {
+export default function EditTaskModal() {
+  const { setIsEditTaskFormOpen, selectedTask, fetchTodos } = useTodos();
   EditTaskModal.propTypes = {
     setIsEditTaskFormOpen: PropTypes.func.isRequired,
     selectedTask: PropTypes.shape({

@@ -19,6 +19,7 @@ export default function TodoItem(props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCompleted, setIsCompleted] = useState(props.isCompleted);
   const menuRef = useRef(null);
+  
 
   const isOverdue = !isCompleted && new Date(props.dueDate) < new Date();
 

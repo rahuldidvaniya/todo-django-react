@@ -2,16 +2,14 @@ import PropTypes from "prop-types";
 import { useState, useRef, useEffect } from "react";
 import { showToast } from "../utils/toastConfig";
 import { api } from "../services/api";
+import { useProjects } from "../hooks/useProjects";
 
 export default function ProjectItem({
   project,
-  handleSelectedProject,
-  selectedProject,
-  openEditForm,
-  fetchProjects,
   setActiveItem,
   fetchTodos,
 }) {
+  const { handleSelectedProject, selectedProject, openEditForm, fetchProjects } = useProjects();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -31,8 +29,6 @@ export default function ProjectItem({
         handleSelectedProject(null);
         fetchProjects();
         fetchTodos();
-        
-
         showToast.success("Project deleted successfully! 🎉");
       } catch (error) {
         console.error("Failed to delete project:", error);
@@ -99,10 +95,6 @@ ProjectItem.propTypes = {
     project_id: PropTypes.number.isRequired,
     project_name: PropTypes.string.isRequired,
   }).isRequired,
-  handleMenuClick: PropTypes.func.isRequired,
-  isMenuOpen: PropTypes.bool.isRequired,
-  handleSelectedProject: PropTypes.func.isRequired,
-  selectedProject: PropTypes.number.isRequired,
-  openEditForm: PropTypes.func.isRequired, 
-  fetchProjects: PropTypes.func.isRequired,
+  setActiveItem: PropTypes.func.isRequired,
+  fetchTodos: PropTypes.func.isRequired,
 };

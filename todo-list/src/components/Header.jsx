@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'; // Import PropTypes
 export default function Header({ toggleSidebar }) {
   Header.propTypes = {
     toggleSidebar: PropTypes.func.isRequired,
-  }; // Define propTypes
+  }; 
 
   return (
     <header className="header no-transition">

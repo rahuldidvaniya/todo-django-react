@@ -235,9 +235,9 @@ hr {
 }
 
 .home-item:hover {
-  background-color: var(--primary-color-hover);
+  background-color: var(--background-alt);
   cursor: pointer;
-  color: var(--background-color);
+  color: var(--text-color);
 }
 .home-item > p {
   font-weight: 600;
@@ -279,6 +279,7 @@ hr {
 
 .active:hover {
   background-color: var(--primary-color-hover);
+  color: var(--background-color);
 }
 
 .project > div {

@@ -4,11 +4,16 @@ import PropTypes from "prop-types";
 import { showToast } from "../utils/toastConfig";
 import { api } from "../services/api";
 import { PRIORITY_LEVELS } from '../constants/constants';
+import { useProjects } from '../hooks/useProjects';
+import { useTodos } from '../hooks/useTodos';
 
-export default function AddTaskModal({ setIsTodoFormOpen, selectedProject, fetchTodos }) {
+
+export default function AddTaskModal() {
+  const { selectedProject } = useProjects();
+  const { setIsTodoFormOpen, fetchTodos } = useTodos();
+
   AddTaskModal.propTypes = {
     setIsTodoFormOpen: PropTypes.func.isRequired,
-    selectedProject: PropTypes.string.isRequired,
     fetchTodos: PropTypes.func.isRequired,
   };
 
@@ -51,7 +56,7 @@ export default function AddTaskModal({ setIsTodoFormOpen, selectedProject, fetch
     },
   });
 
-  // Get today's date in the format YYYY-MM-DD for the min attribute
+ 
   const todayDate = new Date().toISOString().split("T")[0];
 
   return (

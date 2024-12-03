@@ -1,16 +1,10 @@
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 import ProjectItem from "./ProjectItem";
-import { showToast } from "../utils/toastConfig";
+import { useProjects } from "../hooks/useProjects";
 
 export default function ProjectsContainer({
   toggleProjectForm,
-  selectedProject,
-  handleSelectedProject,
-  projects,
-  setProjects,
-  openEditForm,
-  fetchProjects,
   setActiveItem,
   fetchTodos,
 }) {
@@ -25,6 +19,8 @@ export default function ProjectsContainer({
     setActiveItem: PropTypes.func.isRequired,
     fetchTodos: PropTypes.func.isRequired,
   };
+  
+  const { projects, setProjects, fetchProjects } = useProjects();
 
   useEffect(() => {
     fetchProjects();
@@ -45,15 +41,10 @@ export default function ProjectsContainer({
           <ProjectItem
             key={project.project_id}
             project={project}
-            handleSelectedProject={handleSelectedProject}
-            selectedProject={selectedProject}
             refreshProjects={() => removeProject(project.project_id)}
-            openEditForm={openEditForm}
-            fetchProjects={fetchProjects}
             setActiveItem={setActiveItem}
             fetchTodos={fetchTodos}
-          
-          />
+            />
         ))}
       </div>
       <div className="add-project" onClick={toggleProjectForm}>

@@ -3,13 +3,14 @@ import * as Yup from "yup";
 import PropTypes from "prop-types";
 import { showToast } from "../utils/toastConfig";
 import { api } from '../services/api';
+import { useProjects } from '../hooks/useProjects';
 
-export default function AddProjectForm({ setIsProjectFormOpen, fetchProjects }) {
+export default function AddProjectForm() {
   AddProjectForm.propTypes = {
     setIsProjectFormOpen: PropTypes.func.isRequired,
     fetchProjects: PropTypes.func.isRequired,
   };
-
+  const { setIsProjectFormOpen, fetchProjects } = useProjects();
   const handleCloseProjectForm = () => setIsProjectFormOpen(false);
 
   const initialValues = {
